@@ -1,0 +1,374 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><meta name="referrer" content="no-referrer"><link rel="stylesheet" href="explorar.css"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EBD KOINONIA — Atos do Espírito Santo através dos Apóstolos</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f0e8;color:#243b35;font:17px system-ui}main{max-width:720px;margin:auto;padding:24px}header{background:#193b34;color:#f4dfae;padding:30px;border-radius:18px}h1{margin:0;font-size:34px}small{color:inherit}button,select,input{font:inherit;padding:14px;border-radius:10px;border:1px solid #b9c6bd}button{cursor:pointer;background:white;color:#193b34;text-align:left;width:100%;margin:5px 0}button.primary{background:#193b34;color:white;text-align:center}section{background:white;border-radius:16px;padding:20px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap}nav button{width:auto}progress{width:100%;accent-color:#39765b}.muted{color:#62736c}.correct{background:#d7efdc}.wrong{background:#f8d9d5}dialog{max-width:650px;width:94%;border:0;border-radius:16px;padding:24px}dialog::backdrop{background:#0008}label{display:block;margin:10px 0}h2{font-size:23px}
+main{width:min(100%,58rem);padding:clamp(12px,3vw,32px)}
+header,section{padding:clamp(16px,3vw,30px)}
+h1{font-size:clamp(1.7rem,5vw,2.6rem)}
+h2{font-size:clamp(1.28rem,3vw,1.75rem)}
+button,select{min-height:44px;max-width:100%;overflow-wrap:anywhere}
+button:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible{
+  outline:3px solid #39765b;outline-offset:3px
+}
+button:disabled{cursor:default;opacity:1}
+nav{margin-top:12px}
+nav button:disabled{opacity:.65}
+.metrics{display:flex;flex-wrap:wrap;gap:.35rem 1.25rem;font-variant-numeric:tabular-nums}
+.metrics p{margin:.2rem 0}
+.missions,.breakdown{display:grid;gap:.5rem 1rem;grid-template-columns:repeat(2,minmax(0,1fr))}
+.breakdown ul{padding-inline-start:1.2em}
+details{border-top:1px solid #b9c6bd;padding:.85em 0}
+summary{cursor:pointer;overflow-wrap:anywhere}
+dialog{max-height:90vh;overflow:auto;color:#243b35}
+@media print{
+  body{background:white;color:black}
+  main>header,main>nav,#view button{display:none}
+  #certificate{border:1px solid currentColor;text-align:center;padding:2rem}
+}
+@media(max-width:540px){.missions,.breakdown{grid-template-columns:1fr}}
+@media(min-width:1500px) and (min-height:800px){
+  body{font-size:clamp(22px,1.45vw,37px)}
+  main{width:min(86vw,78rem)}
+  h1{font-size:2em}h2{font-size:1.4em}
+  button,select{min-height:56px}
+  dialog{max-width:58rem}
+}
+</style><main><header><small>ESCOLA BÍBLICA • ATOS 8–12</small><h1>EBD KOINONIA</h1><h2>Atos do Espírito Santo através dos Apóstolos</h2><p>Cinco capítulos. Uma jornada de descobertas.</p></header><nav><button onclick="home()">Início</button><button id="nav-bible" onclick="bible()">Bíblia</button><button onclick="stats()">Resultados</button></nav><div id="view"></div></main><dialog id="reader"><h2>Consulta bíblica</h2><label>Capítulo <select id="chapter" onchange="read()"></select></label><div id="passage"></div><button onclick="document.querySelector('#reader').close()">Voltar</button></dialog><script src="questoes-v03.js"></script><script>
+const summaries={8:'A perseguição dispersa os discípulos. Filipe anuncia Cristo em Samaria e explica Isaías ao oficial etíope. Pedro e João visitam Samaria.',9:'Saulo encontra Jesus no caminho de Damasco. Ananias o visita. Pedro cura Eneias em Lida e Tabita volta à vida em Jope.',10:'Cornélio recebe uma visão em Cesareia. Pedro recebe uma visão em Jope e anuncia Jesus na casa de Cornélio.',11:'Pedro explica a recepção dos gentios. Barnabé e Saulo ensinam em Antioquia. Ágabo anuncia uma fome.',12:'Herodes mata Tiago e prende Pedro. A igreja ora. Pedro é libertado por um anjo e vai à casa de Maria, onde Rode reconhece sua voz.'};
+
+const bank = window.EBD_QUESTOES_V03;
+const chapters = [8, 9, 10, 11, 12];
+const weights = {'Fácil': 100, 'Intermediária': 150, 'Avançada': 200};
+const byId = new Map(Array.isArray(bank) ? bank.map(q => [q.id, q]) : []);
+const view = document.querySelector('#view');
+const reader = document.querySelector('#reader');
+const chapter = document.querySelector('#chapter');
+const passage = document.querySelector('#passage');
+const navBible = document.querySelector('#nav-bible');
+const safeInt = n => Number.isSafeInteger(n) && n >= 0;
+
+let active = null;
+let completed = null;
+let inActivity = false;
+let tickingSince = null;
+const records = [];
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[ch]);
+}
+
+function shuffled(values) {
+  const copy = values.slice();
+  for (let last = copy.length - 1; last > 0; last--) {
+    const selected = Math.floor(Math.random() * (last + 1));
+    [copy[last], copy[selected]] = [copy[selected], copy[last]];
+  }
+  return copy;
+}
+
+function currentItem() {
+  return active ? active.items[active.index] : null;
+}
+
+function readerLocked() {
+  return active?.mode === 'desafio' && currentItem().choice === null;
+}
+
+function updateNavigation() {
+  navBible.disabled = Boolean(readerLocked());
+}
+
+function startClock() {
+  if (active && inActivity && !document.hidden && tickingSince === null) {
+    tickingSince = performance.now();
+  }
+}
+
+function checkpoint() {
+  if (tickingSince === null) return;
+  const now = performance.now();
+  active.elapsed += Math.max(0, Math.round(now - tickingSince));
+  tickingSince = now;
+}
+
+function pauseClock() {
+  checkpoint();
+  tickingSince = null;
+}
+
+function duration(ms) {
+  const seconds = Math.floor(ms / 1000);
+  return [Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60]
+    .map(n => String(n).padStart(2, '0')).join(':');
+}
+
+function updateClock() {
+  const clock = document.querySelector('#elapsed');
+  if (clock && active) {
+    const pending = tickingSince === null ? 0 : performance.now() - tickingSince;
+    clock.textContent = duration(active.elapsed + pending);
+  }
+}
+
+function stopViewing() {
+  pauseClock();
+  inActivity = false;
+}
+
+function home() {
+  stopViewing();
+  updateNavigation();
+  view.innerHTML = `<section><h2>Escolha sua missão</h2>
+    ${active ? '<button class="primary" onclick="resume()">Retomar atividade</button>' : ''}
+    <label>Modalidade <select id="mode">
+      <option value="estudo">Estudo</option>
+      <option value="desafio">Desafio</option>
+    </select></label>
+    <div class="missions">
+      <button class="primary" onclick="start(10)">Individual • 10 perguntas</button>
+      <button onclick="start(5)">Desafio rápido • 5 perguntas</button>
+      ${chapters.map(c => `<button onclick="start(16,${c})">Missão Atos ${c} • 16 perguntas</button>`).join('')}
+      <button onclick="start(20)">Grande missão • 20 perguntas</button>
+      <button onclick="start(40)">Super missão • 40 perguntas</button>
+      <button onclick="start(80)">Maratona • 80 perguntas</button>
+    </div><p id="bank-status" role="status" hidden></p></section>`;
+  if (active) document.querySelector('#mode').value = active.mode;
+}
+
+function start(total, selectedChapter) {
+  if (inActivity || ![5, 10, 16, 20, 40, 80].includes(total)) return;
+  const pool = byId.size !== 80 ? [] :
+    selectedChapter === undefined ? bank : bank.filter(q => q.capitulo === selectedChapter);
+  if (pool.length < total) {
+    const bankStatus = document.querySelector('#bank-status');
+    bankStatus.textContent = 'Banco de questões indisponível. Verifique o arquivo questoes-v03.js.';
+    bankStatus.hidden = false;
+    return;
+  }
+  if (active && !confirm('Substituir a atividade em andamento?')) return;
+  active = {
+    mode: document.querySelector('#mode').value, elapsed: 0, index: 0,
+    items: shuffled(pool).slice(0, total).map(q => ({
+      id: q.id, order: shuffled(q.alternativas.map((_, index) => index)),
+      choice: null, hint: false, consults: 0, assistedConsults: 0
+    }))
+  };
+  resume();
+}
+
+function resume() {
+  if (!active) return;
+  inActivity = true;
+  startClock();
+  question(true);
+}
+
+function resultOf(item) {
+  const q = byId.get(item.id);
+  const correct = item.choice !== null && item.order[item.choice] === q.indiceRespostaCorreta;
+  const multiplier = active.mode === 'desafio' ? 2 :
+    item.hint && item.assistedConsults ? 0.5 : item.hint || item.assistedConsults ? 0.75 : 1;
+  return {correct, points: correct ? Math.round(weights[q.dificuldade] * multiplier) : 0};
+}
+
+function totals() {
+  return active.items.reduce((sum, item) => {
+    if (item.choice === null) return sum;
+    const result = resultOf(item);
+    sum.answered++;
+    sum.score += Number(result.correct);
+    sum.points += result.points;
+    return sum;
+  }, {answered: 0, score: 0, points: 0});
+}
+
+function question(focus = false) {
+  const item = currentItem();
+  const q = byId.get(item.id);
+  const done = item.choice !== null;
+  const correctIndex = item.order.indexOf(q.indiceRespostaCorreta);
+  const sum = totals();
+  const hintAllowed = active.mode === 'estudo';
+  updateNavigation();
+  view.innerHTML = `<section>
+    <small>${escapeHtml(q.titulo)} • Atos ${q.capitulo} • ${active.mode === 'estudo' ? 'Estudo' : 'Desafio'}</small>
+    <div class="metrics">
+      <p>Respondidas ${sum.answered}/${active.items.length}</p>
+      <p>Acertos ${sum.score}</p><p>Pontos ${sum.points}</p>
+      <p>Tempo <span id="elapsed">${duration(active.elapsed)}</span></p>
+    </div>
+    <progress aria-label="Perguntas respondidas" value="${sum.answered}" max="${active.items.length}"></progress>
+    <h2 id="question-title" tabindex="-1">${active.index + 1}. ${escapeHtml(q.pergunta)}</h2>
+    ${item.order.map((option, j) => {
+      const style = done && j === correctIndex ? 'correct' : done && j === item.choice ? 'wrong' : '';
+      const label = style === 'correct' ? ' — resposta correta' : style === 'wrong' ? ' — sua resposta' : '';
+      return `<button class="option ${style}" ${done ? 'disabled' : ''} onclick="answer(${j})">${escapeHtml(q.alternativas[option])}${label}</button>`;
+    }).join('')}
+    ${hintAllowed && !done && !item.hint ? '<button onclick="revealHint()">Revelar pista</button>' : ''}
+    ${hintAllowed && item.hint ? `<p id="hint" tabindex="-1"><strong>Pista</strong> ${escapeHtml(q.pista)}</p>` : ''}
+    ${hintAllowed || done ? `<button onclick="bible(${q.capitulo})">Consultar Bíblia / guia</button>` : ''}
+    ${done ? `<div id="feedback" tabindex="-1">
+      <h3>${item.choice === correctIndex ? 'Você acertou!' : 'Uma nova descoberta!'}</h3>
+      <p>${escapeHtml(q.explicacao)} — ${escapeHtml(q.referenciaBiblica)}</p>
+      <p>+${resultOf(item).points} pontos</p>
+      <button class="primary" onclick="next()">${active.index + 1 === active.items.length ? 'Concluir' : 'Continuar'}</button>
+    </div>` : ''}</section>`;
+  updateClock();
+  if (focus) document.querySelector('#question-title').focus();
+}
+
+function revealHint() {
+  const item = currentItem();
+  if (!inActivity || active?.mode !== 'estudo' || item.choice !== null || item.hint) return;
+  item.hint = true;
+  question();
+  document.querySelector('#hint').focus();
+}
+
+function answer(j) {
+  const item = currentItem();
+  if (!inActivity || !item || item.choice !== null || !safeInt(j) || j >= item.order.length) return;
+  item.choice = j;
+  checkpoint();
+  question();
+  document.querySelector('#feedback').focus();
+}
+
+function next() {
+  const item = currentItem();
+  if (!inActivity || !item || item.choice === null) return;
+  if (active.index + 1 < active.items.length) {
+    active.index++;
+    question(true);
+    return;
+  }
+  pauseClock();
+  const result = {
+    mode: active.mode, date: new Date().toISOString(),
+    total: active.items.length, score: totals().score, points: totals().points,
+    elapsed: active.elapsed, consults: active.items.reduce((n, row) => n + row.consults, 0),
+    answers: active.items.map(row => {
+      const q = byId.get(row.id);
+      return {id: q.id, chapter: q.capitulo, category: q.categoria,
+        difficulty: q.dificuldade, hint: row.hint, consults: row.consults, ...resultOf(row)};
+    })
+  };
+  completed = result;
+  records.push(result);
+  active = null;
+  inActivity = false;
+  showResult();
+}
+
+function showResult() {
+  updateNavigation();
+  view.innerHTML = `<section><h2>Missão concluída!</h2>
+    <h1>${completed.score}/${completed.total}</h1>
+    <p>${completed.points} pontos • ${duration(completed.elapsed)}</p>
+    <details><summary>Cartão de desempenho</summary>
+      <p>${completed.mode === 'desafio' ? 'Desafio' : 'Estudo'} • ${completed.consults} consultas</p>
+      ${breakdown(completed.answers)}</details>
+    <p><a href="https://wa.me/?text=${encodeURIComponent(shareText())}" target="_blank" rel="noopener">Compartilhar pelo WhatsApp</a></p>
+    <button onclick="share()">Compartilhar resultado</button>
+    <button onclick="certificate()">Certificado</button>
+    <button onclick="home()">Nova missão</button></section>`;
+}
+
+function certificate() {
+  if (!completed) return;
+  const name = prompt('Nome para o certificado', '');
+  if (!name?.trim()) return;
+  view.innerHTML = `<section id="certificate">
+    <h2>Certificado de conclusão</h2>
+    <p>EBD KOINONIA • Atos 8–12</p>
+    <h3>${escapeHtml(name.trim())}</h3>
+    <p>Concluiu a missão no modo ${completed.mode === 'desafio' ? 'Desafio' : 'Estudo'}
+      com ${completed.score}/${completed.total} acertos e ${completed.points} pontos.</p>
+    <p>${escapeHtml(new Date(completed.date).toLocaleDateString('pt-BR'))}</p>
+    <button onclick="window.print()">Imprimir certificado</button>
+    <button onclick="showResult()">Voltar ao resultado</button>
+  </section>`;
+}
+
+function shareText() {
+  return `Concluí uma missão da EBD KOINONIA — Atos do Espírito Santo através dos Apóstolos! Acertei ${completed.score} de ${completed.total} perguntas.`;
+}
+
+function share() {
+  if (!completed) return;
+  const text = shareText();
+  if (navigator.share) navigator.share({text}).catch(() => {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(text)
+    .then(() => alert('Resultado copiado')).catch(() => prompt('Copie seu resultado', text));
+  else prompt('Copie seu resultado', text);
+}
+
+function bible(c = 8) {
+  if (readerLocked() || !chapters.includes(c) || reader.open) return;
+  const item = currentItem();
+  if (item && inActivity) {
+    item.consults++;
+    if (item.choice === null) item.assistedConsults++;
+  }
+  chapter.value = String(c);
+  read();
+  reader.showModal();
+}
+
+function read() {
+  const c = Number(chapter.value);
+  if (!chapters.includes(c)) return;
+  passage.innerHTML = `<p><strong>Guia de leitura — Atos ${c}</strong></p>
+    <p>${escapeHtml(summaries[c])}</p>
+    <p class="muted">Resumo autoral do capítulo.</p>
+    <a href="https://www.biblegateway.com/passage/?search=Acts%20${c}&amp;version=ARC" target="_blank" rel="noopener">Abrir capítulo em uma Bíblia online</a>`;
+}
+
+function breakdown(answers) {
+  if (!answers.length) return '';
+  const dimensions = [['chapter', 'Capítulo'], ['category', 'Categoria'], ['difficulty', 'Dificuldade']];
+  return `<div class="breakdown">${dimensions.map(([key, title]) => {
+    const groups = new Map();
+    for (const row of answers) {
+      const label = key === 'chapter' ? `Atos ${row.chapter}` : row[key];
+      const sum = groups.get(label) || {correct: 0, count: 0, points: 0};
+      sum.correct += Number(row.correct);
+      sum.count++;
+      sum.points += row.points;
+      groups.set(label, sum);
+    }
+    const labels = [...groups.keys()].sort((a,b) => a.localeCompare(b, 'pt-BR', {numeric:true}));
+    return `<div><h3>${title}</h3><ul>${labels.map(label => {
+      const {correct, count, points} = groups.get(label);
+      return `<li>${escapeHtml(label)} — ${correct}/${count} acertos (${Math.round(100 * correct / count)}%) • ${points} pts</li>`;
+    }).join('')}</ul></div>`;
+  }).join('')}</div>`;
+}
+
+function stats() {
+  stopViewing();
+  const sum = key => records.reduce((n, r) => n + r[key], 0);
+  const mostRecent = [...records].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+  view.innerHTML = `<section><h2>Resultados desta página</h2>
+    <p>Missões concluídas ${records.length} • Acertos ${sum('score')}/${sum('total')} • Consultas ${sum('consults')}</p>
+    ${breakdown(records.flatMap(r => r.answers))}
+    ${mostRecent.map(r => `<details><summary>${escapeHtml(new Date(r.date).toLocaleString('pt-BR'))}
+      • ${r.mode === 'desafio' ? 'Desafio • ' : r.mode === 'estudo' ? 'Estudo • ' : ''}${r.score}/${r.total} acertos</summary>
+      <p>${r.consults} consultas${safeInt(r.points) && safeInt(r.elapsed) ?
+        ` • ${r.points} pontos • ${duration(r.elapsed)}` : ''}</p>${breakdown(r.answers)}</details>`).join('')}
+    <p class="muted">Resultados disponíveis enquanto esta página estiver aberta.</p></section>`;
+}
+
+chapter.innerHTML = chapters.map(c => `<option value="${c}">${c}</option>`).join('');
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) pauseClock();
+  else startClock();
+  updateClock();
+});
+window.addEventListener('pagehide', pauseClock);
+window.addEventListener('pageshow', startClock);
+setInterval(() => {
+  checkpoint();
+  updateClock();
+}, 1000);
+home();
+</script><script src="explorar.js"></script></html>

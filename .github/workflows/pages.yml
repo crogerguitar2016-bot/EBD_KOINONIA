@@ -1,0 +1,43 @@
+name: Publicar EBD KOINONIA
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check public/explorar.js && node testes/ebd.cjs public
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Conferir endereço público
+        env:
+          PAGES_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          expected = json.loads(Path('manifesto.json').read_text())['url'].rstrip('/')
+          actual = os.environ['PAGES_URL'].rstrip('/')
+          if actual != expected:
+              raise SystemExit(f'Endereço configurado: {expected}. Endereço do Pages: {actual}.')
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: publicar
+        uses: actions/deploy-pages@v4
