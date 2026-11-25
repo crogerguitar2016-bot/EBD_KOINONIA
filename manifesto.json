@@ -7,12 +7,97 @@
     "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24"
   },
   "arquivos": {
-    "index.html": "6b9d2f19eb525f89bfbfeca68e1b61a2cf8d21d569f200d932c4fb90f1be63b0",
+    "index.html": "d1ab7f2a2aad53d3d95e403dad837c8f2df7ebd83421d7a530d493e9ad09d13c",
     "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24",
     "explorar.css": "c983578e4fdaa9ad34fcda32bd99c3653806ef6d0fc6bc9ba1fbf28204b6272f",
     "explorar.js": "23bb089ba5a2bac113f5081143886d75a737a15c44f353a7f529f31e7ebbade7",
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "estudo-biblico.html": "cf8d01dc1c53e10307a0989b958b96bc0ab0deefbae9b40def7f53ca0a99b355",
-    "principais-textos.html": "880b44c664f1d8736588bcd4c26915a56774487eeb359492b464945edcf3c92a"
-  }
+    "estudo-biblico.html": "e7dfe20a5b5154b3dfc31f94ec2587bd38133aa1e737591fd49b6b94e447e79e",
+    "principais-textos.html": "c1b9df6790300bff9d8245249dff322f4368ec3d4eab4fa604f4cd6dbea4eb8c",
+    "icons/apple-touch-icon.png": "a72fa01038b92190fd126ff5de4bbdd4a5a911678d00d23859e7eaf710de953c",
+    "icons/icon-192.png": "a8f70790bd03540f9ffe36052df6c5a7d621695d7c8b70eddfa4f5b020c5cf4d",
+    "icons/icon-512.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
+    "icons/icon-maskable.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
+    "manifest.webmanifest": "6158a48323ad0e1710bd7c3ff0d4fa73538d5173b86449b281833d574733f9e9",
+    "offline.html": "ca70dcbf67f5120d8d1f5a6004377114ef96aa80f2b30f9f9efa05ef54108042",
+    "sw.js": "61e321d7123e60781880c00b15225d98d80218b0c27e109eb71eae37f28261ad",
+    "pwa.js": "cc7f5684658127b6fb9eb3b270eb317a63a3a4d6b7dc55a4cf7ed78c7d486046",
+    "testes/pwa.cjs": "2ca2c1c3bc291cb896e7241e363095128bc2b0bc918107d6bb6503c0333724f7"
+  },
+  "historico_pwa": [
+    {
+      "etapa": "06",
+      "versao": "EBD KOINONIA PWA V1.0",
+      "release_cache": "3443d566e9347eef25bdaaf83bdc2c9fa3c2ae8070087f411140f2ac5589bd8d",
+      "arquivos_anteriores": {
+        "index.html": "6b9d2f19eb525f89bfbfeca68e1b61a2cf8d21d569f200d932c4fb90f1be63b0",
+        "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24",
+        "explorar.css": "c983578e4fdaa9ad34fcda32bd99c3653806ef6d0fc6bc9ba1fbf28204b6272f",
+        "explorar.js": "23bb089ba5a2bac113f5081143886d75a737a15c44f353a7f529f31e7ebbade7",
+        ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "estudo-biblico.html": "cf8d01dc1c53e10307a0989b958b96bc0ab0deefbae9b40def7f53ca0a99b355",
+        "principais-textos.html": "880b44c664f1d8736588bcd4c26915a56774487eeb359492b464945edcf3c92a"
+      },
+      "public_antes": {
+        ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "estudo-biblico.html": "cf8d01dc1c53e10307a0989b958b96bc0ab0deefbae9b40def7f53ca0a99b355",
+        "explorar.css": "c983578e4fdaa9ad34fcda32bd99c3653806ef6d0fc6bc9ba1fbf28204b6272f",
+        "explorar.js": "23bb089ba5a2bac113f5081143886d75a737a15c44f353a7f529f31e7ebbade7",
+        "icons/apple-touch-icon.png": "a72fa01038b92190fd126ff5de4bbdd4a5a911678d00d23859e7eaf710de953c",
+        "icons/icon-192.png": "a8f70790bd03540f9ffe36052df6c5a7d621695d7c8b70eddfa4f5b020c5cf4d",
+        "icons/icon-512.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
+        "icons/icon-maskable.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
+        "index.html": "6b9d2f19eb525f89bfbfeca68e1b61a2cf8d21d569f200d932c4fb90f1be63b0",
+        "manifest.webmanifest": "e546470d340d896bf29ab2d8cb4f8799161fd43cef12507f29b01a71af050952",
+        "offline.html": "ca70dcbf67f5120d8d1f5a6004377114ef96aa80f2b30f9f9efa05ef54108042",
+        "principais-textos.html": "880b44c664f1d8736588bcd4c26915a56774487eeb359492b464945edcf3c92a",
+        "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24",
+        "sw.js": "1d9ea2415cfacfe5613757d1d1533a36251de267d2301bbf206c161c3be03677"
+      },
+      "verificacao_html": {
+        "index.html": {
+          "sha256_original": "6b9d2f19eb525f89bfbfeca68e1b61a2cf8d21d569f200d932c4fb90f1be63b0",
+          "sha256_integrado": "d1ab7f2a2aad53d3d95e403dad837c8f2df7ebd83421d7a530d493e9ad09d13c",
+          "insercoes": [
+            {
+              "offset_original": 287,
+              "bytes_inseridos": 40
+            },
+            {
+              "offset_original": 443,
+              "bytes_inseridos": 148
+            }
+          ]
+        },
+        "estudo-biblico.html": {
+          "sha256_original": "cf8d01dc1c53e10307a0989b958b96bc0ab0deefbae9b40def7f53ca0a99b355",
+          "sha256_integrado": "e7dfe20a5b5154b3dfc31f94ec2587bd38133aa1e737591fd49b6b94e447e79e",
+          "insercoes": [
+            {
+              "offset_original": 1082,
+              "bytes_inseridos": 148
+            }
+          ]
+        },
+        "principais-textos.html": {
+          "sha256_original": "880b44c664f1d8736588bcd4c26915a56774487eeb359492b464945edcf3c92a",
+          "sha256_integrado": "c1b9df6790300bff9d8245249dff322f4368ec3d4eab4fa604f4cd6dbea4eb8c",
+          "insercoes": [
+            {
+              "offset_original": 260,
+              "bytes_inseridos": 7
+            },
+            {
+              "offset_original": 297,
+              "bytes_inseridos": 56
+            },
+            {
+              "offset_original": 2002,
+              "bytes_inseridos": 148
+            }
+          ]
+        }
+      }
+    }
+  ]
 }
