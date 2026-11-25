@@ -36,8 +36,9 @@ jobs:
           if actual != expected:
               raise SystemExit(f'Endereço configurado: {expected}. Endereço do Pages: {actual}.')
           PY
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: public
+          name: github-pages
       - id: publicar
         uses: actions/deploy-pages@v4
