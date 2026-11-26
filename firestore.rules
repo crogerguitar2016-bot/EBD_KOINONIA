@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function google() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true;
+    }
+    function own(uid) { return google() && request.auth.uid == uid; }
+    function classroom(c) {
+      return get(/databases/$(database)/documents/turmas/$(c)).data;
+    }
+    function teacher(c) { return google() && classroom(c).professor == request.auth.uid; }
+    function open(c) {
+      return classroom(c).ativa == true && request.time < classroom(c).retencaoAte;
+    }
+    function member(c, uid) {
+      return get(/databases/$(database)/documents/turmas/$(c)/matriculas/$(uid)).data;
+    }
+    function eligible(c, uid) {
+      return own(uid) && open(c) && member(c, uid).ativa == true
+        && member(c, uid).autorizacaoRegistrada == true;
+    }
+    function consent(c, uid) {
+      return get(/databases/$(database)/documents/turmas/$(c)/consentimentos/$(uid)).data;
+    }
+    function exact(d, fields) { return d.keys().hasAll(fields) && d.keys().hasOnly(fields); }
+    function uuid(s) {
+      return s is string && s.matches('[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}');
+    }
+    function number(n, low, high) { return n is int && n >= low && n <= high; }
+    function enrollment(d) {
+      return exact(d, ['rotulo', 'ativa', 'autorizacaoRegistrada', 'ciclo', 'alteradaEm'])
+        && d.rotulo is string && d.rotulo.size() > 0 && d.rotulo.size() <= 60
+        && d.ativa is bool && d.autorizacaoRegistrada is bool
+        && (!d.ativa || d.autorizacaoRegistrada)
+        && uuid(d.ciclo) && d.alteradaEm == request.time;
+    }
+    function optIn(d, c, uid) {
+      return exact(d, ['versao', 'escopo', 'ativa', 'chave', 'ciclo', 'alteradoEm'])
+        && d.versao == 1 && d.escopo == 'novas-missoes'
+        && d.ativa == true && uuid(d.chave) && d.ciclo == member(c, uid).ciclo
+        && d.alteradoEm == request.time;
+    }
+    function optOut(d) {
+      return d.diff(resource.data).affectedKeys().hasOnly(['ativa', 'alteradoEm'])
+        && d.ativa == false && d.alteradoEm == request.time;
+    }
+    function bucket(b) {
+      return b is map && exact(b, ['n', 'a', 'p'])
+        && number(b.n, 0, 16) && number(b.a, 0, b.n)
+        && number(b.p, 0, 400 * b.a);
+    }
+    function activity(d) {
+      return (d.atividade == '5' && d.total == 5 || d.atividade == '10' && d.total == 10
+        || d.atividade == '20' && d.total == 20 || d.atividade == '40' && d.total == 40
+        || d.atividade == '80' && d.total == 80)
+        || d.total == 16 && (
+          d.atividade == 'atos-8' && d.c8.n == 16 ||
+          d.atividade == 'atos-9' && d.c9.n == 16 ||
+          d.atividade == 'atos-10' && d.c10.n == 16 ||
+          d.atividade == 'atos-11' && d.c11.n == 16 ||
+          d.atividade == 'atos-12' && d.c12.n == 16);
+    }
+    function submission(d, id, c, uid) {
+      return exact(d, ['versao', 'pontuacao', 'banco', 'chave', 'ciclo', 'digest', 'modo',
+        'atividade', 'total', 'c8', 'c9', 'c10', 'c11', 'c12', 'verificado', 'recebidoEm'])
+        && uuid(id) && d.versao == 1 && d.pontuacao == 1
+        && d.banco == 'd1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24'
+        && d.digest is string && d.digest.matches('[a-f0-9]{64}')
+        && d.verificado == false && d.recebidoEm == request.time
+        && d.modo in ['estudo', 'desafio']
+        && bucket(d.c8) && bucket(d.c9) && bucket(d.c10) && bucket(d.c11) && bucket(d.c12)
+        && d.total == d.c8.n + d.c9.n + d.c10.n + d.c11.n + d.c12.n && activity(d)
+        && consent(c, uid).ativa == true && consent(c, uid).versao == 1
+        && consent(c, uid).escopo == 'novas-missoes'
+        && d.chave == consent(c, uid).chave
+        && d.ciclo == consent(c, uid).ciclo && d.ciclo == member(c, uid).ciclo;
+    }
+
+    match /turmas/{c} {
+      allow get: if teacher(c) || eligible(c, request.auth.uid);
+
+      match /matriculas/{uid} {
+        allow get: if own(uid) || teacher(c);
+        allow list: if teacher(c) && request.query.limit <= 100;
+        allow create: if teacher(c) && open(c) && enrollment(request.resource.data);
+        allow update: if teacher(c) && enrollment(request.resource.data)
+          && request.resource.data.ciclo != resource.data.ciclo
+          && (open(c) || request.resource.data.ativa == false);
+        allow delete: if teacher(c) && resource.data.ativa == false;
+
+        match /resultados/{id} {
+          allow get: if eligible(c, uid) ||
+            (teacher(c) && request.time < classroom(c).retencaoAte);
+          allow list: if teacher(c) && request.query.limit <= 100
+            && request.time < classroom(c).retencaoAte;
+          allow create: if eligible(c, uid) && submission(request.resource.data, id, c, uid);
+          allow delete: if teacher(c) &&
+            (request.time >= classroom(c).retencaoAte || member(c, uid).ativa == false);
+        }
+      }
+
+      match /consentimentos/{uid} {
+        allow get: if own(uid) || teacher(c);
+        allow create: if eligible(c, uid) && optIn(request.resource.data, c, uid);
+        allow update: if (own(uid) && optOut(request.resource.data)) ||
+          (eligible(c, uid) && optIn(request.resource.data, c, uid)
+            && request.resource.data.chave != resource.data.chave);
+        allow delete: if teacher(c) &&
+          (request.time >= classroom(c).retencaoAte || member(c, uid).ativa == false);
+      }
+    }
+  }
+}

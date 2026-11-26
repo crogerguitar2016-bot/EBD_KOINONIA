@@ -1,7 +1,15 @@
 'use strict';
 
-const RELEASE = '3443d566e9347eef25bdaaf83bdc2c9fa3c2ae8070087f411140f2ac5589bd8d';
+const RELEASE = '7b5c51f023e33ca8d7e2bbcc600326154009f22e2b8143cc5ffa121e8e12e19e';
 const FILES = {
+  "aluno-dados.js": {
+    "mime": "text/javascript; charset=utf-8",
+    "sha256": "68319585829b79e936340717924e962479e932bc08a4b28e0ced53b5f600a0cd"
+  },
+  "aluno.js": {
+    "mime": "text/javascript; charset=utf-8",
+    "sha256": "7f949150a1da30c41cdefb7a1f1fe2328138c7da5468ec05da13deafa0246791"
+  },
   "estudo-biblico.html": {
     "mime": "text/html; charset=utf-8",
     "sha256": "e7dfe20a5b5154b3dfc31f94ec2587bd38133aa1e737591fd49b6b94e447e79e"
@@ -12,7 +20,7 @@ const FILES = {
   },
   "explorar.js": {
     "mime": "text/javascript; charset=utf-8",
-    "sha256": "23bb089ba5a2bac113f5081143886d75a737a15c44f353a7f529f31e7ebbade7"
+    "sha256": "b13fd7999508752ff044adf95252f2fae5321977c34dbbb382cb0e217781f74e"
   },
   "icons/apple-touch-icon.png": {
     "mime": "image/png",
@@ -32,11 +40,11 @@ const FILES = {
   },
   "index.html": {
     "mime": "text/html; charset=utf-8",
-    "sha256": "d1ab7f2a2aad53d3d95e403dad837c8f2df7ebd83421d7a530d493e9ad09d13c"
+    "sha256": "3fd72c306cb55e8235cb38b889bc92fcabd3b57d69fbea889dff4a14968ec17e"
   },
   "manifest.webmanifest": {
     "mime": "application/manifest+json",
-    "sha256": "6158a48323ad0e1710bd7c3ff0d4fa73538d5173b86449b281833d574733f9e9"
+    "sha256": "7b20de871c185ef86e30d221b012f8d18e77f8550c99852e12af7405dee960aa"
   },
   "offline.html": {
     "mime": "text/html; charset=utf-8",
@@ -48,11 +56,23 @@ const FILES = {
   },
   "pwa.js": {
     "mime": "text/javascript; charset=utf-8",
-    "sha256": "cc7f5684658127b6fb9eb3b270eb317a63a3a4d6b7dc55a4cf7ed78c7d486046"
+    "sha256": "c136657fdd0c082d422b9831b9b5a80bd5fc71a4f44c1e125251bf5f1208de73"
   },
   "questoes-v03.js": {
     "mime": "text/javascript; charset=utf-8",
     "sha256": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24"
+  },
+  "turma-config.json": {
+    "mime": "application/json; charset=utf-8",
+    "sha256": "043b6fc58cd6816929f3afb8c4e5a200ff3265ddb669fdb022b6aa7f90456fa9"
+  },
+  "turma-core.js": {
+    "mime": "text/javascript; charset=utf-8",
+    "sha256": "b51e1d26f8098d02f2b4452e18481fc528ac7f2afd664f3457ff6d47e730d434"
+  },
+  "turma.js": {
+    "mime": "text/javascript; charset=utf-8",
+    "sha256": "3ce97759289f6b6051b309a3aeabf01192ab6506eaf07421d5f770f58ac582b7"
   }
 };
 const PAGES = new Set(["estudo-biblico.html", "index.html", "principais-textos.html"]);

@@ -7,10 +7,10 @@
     "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24"
   },
   "arquivos": {
-    "index.html": "d1ab7f2a2aad53d3d95e403dad837c8f2df7ebd83421d7a530d493e9ad09d13c",
+    "index.html": "3fd72c306cb55e8235cb38b889bc92fcabd3b57d69fbea889dff4a14968ec17e",
     "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24",
     "explorar.css": "c983578e4fdaa9ad34fcda32bd99c3653806ef6d0fc6bc9ba1fbf28204b6272f",
-    "explorar.js": "23bb089ba5a2bac113f5081143886d75a737a15c44f353a7f529f31e7ebbade7",
+    "explorar.js": "b13fd7999508752ff044adf95252f2fae5321977c34dbbb382cb0e217781f74e",
     ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "estudo-biblico.html": "e7dfe20a5b5154b3dfc31f94ec2587bd38133aa1e737591fd49b6b94e447e79e",
     "principais-textos.html": "c1b9df6790300bff9d8245249dff322f4368ec3d4eab4fa604f4cd6dbea4eb8c",
@@ -18,11 +18,16 @@
     "icons/icon-192.png": "a8f70790bd03540f9ffe36052df6c5a7d621695d7c8b70eddfa4f5b020c5cf4d",
     "icons/icon-512.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
     "icons/icon-maskable.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
-    "manifest.webmanifest": "6158a48323ad0e1710bd7c3ff0d4fa73538d5173b86449b281833d574733f9e9",
+    "manifest.webmanifest": "7b20de871c185ef86e30d221b012f8d18e77f8550c99852e12af7405dee960aa",
     "offline.html": "ca70dcbf67f5120d8d1f5a6004377114ef96aa80f2b30f9f9efa05ef54108042",
-    "sw.js": "61e321d7123e60781880c00b15225d98d80218b0c27e109eb71eae37f28261ad",
-    "pwa.js": "cc7f5684658127b6fb9eb3b270eb317a63a3a4d6b7dc55a4cf7ed78c7d486046",
-    "testes/pwa.cjs": "2ca2c1c3bc291cb896e7241e363095128bc2b0bc918107d6bb6503c0333724f7"
+    "sw.js": "9f0c765200ec3e37db1a38c0f4e0e54f3d41e6088f52afcef11cf29a71f65180",
+    "pwa.js": "c136657fdd0c082d422b9831b9b5a80bd5fc71a4f44c1e125251bf5f1208de73",
+    "testes/pwa.cjs": "2ca2c1c3bc291cb896e7241e363095128bc2b0bc918107d6bb6503c0333724f7",
+    "aluno-dados.js": "68319585829b79e936340717924e962479e932bc08a4b28e0ced53b5f600a0cd",
+    "aluno.js": "7f949150a1da30c41cdefb7a1f1fe2328138c7da5468ec05da13deafa0246791",
+    "turma-config.json": "043b6fc58cd6816929f3afb8c4e5a200ff3265ddb669fdb022b6aa7f90456fa9",
+    "turma-core.js": "b51e1d26f8098d02f2b4452e18481fc528ac7f2afd664f3457ff6d47e730d434",
+    "turma.js": "3ce97759289f6b6051b309a3aeabf01192ab6506eaf07421d5f770f58ac582b7"
   },
   "historico_pwa": [
     {
@@ -99,5 +104,54 @@
         }
       }
     }
-  ]
+  ],
+  "fase_02_bloco_01": {
+    "base": "f3d02b29d31d0f664bfeaa8905e013ded62f746c",
+    "release_cache": "8856c48056fe8e9524f807d62255ebc70362003d7b3c1e581f6aa40235fad263",
+    "indexeddb": 2,
+    "banco": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24",
+    "testes": {
+      "testes/aluno-modelo.cjs": "722bcc6fb4ef65a3589ecbd8c0e6db24262a2367e53f67236f7ef74a551647a2",
+      "testes/aluno-navegador.cjs": "a16733802cf5cac2041622d74a47e44ea286a0b16e6894816f0d7cecc0cd0cf9"
+    }
+  },
+  "fase_02_operacao_01_21": {
+    "base": "f3d02b29d31d0f664bfeaa8905e013ded62f746c",
+    "release_cache": "97996590ebdf3a3ee44362bff24e8880ef683dd78b192f3f8f1a39d0721c997a",
+    "indexeddb": 2,
+    "formato_backup": 1,
+    "testes": {
+      "testes/aluno-modelo.cjs": "317e7aca5d418ab5e64f9a2c381a63dab991ca7e9673e87e0a93f2cd338e676e",
+      "testes/aluno-navegador.cjs": "6cb82a3e45b1ca2bbe2d63e0eb0b951281b7a494d88b9dabb5c93d73a912c8ec"
+    }
+  },
+  "fase_02_operacao_01_33": {
+    "base": "f3d02b29d31d0f664bfeaa8905e013ded62f746c",
+    "release_cache": "7fef574882bb4019f4ff26c1fae0e3e7730946857336d3dfa30a041bf4e07aef",
+    "indexeddb": 2,
+    "formato_backup": 1,
+    "testes": {
+      "testes/aluno-navegador.cjs": "526ad78cd63246a65f0bdceed57e292447be2f1ca56af0f2d3702354c2486004"
+    }
+  },
+  "fase_02_operacao_02_10": {
+    "base": "f3d02b29d31d0f664bfeaa8905e013ded62f746c",
+    "release_cache": "7b5c51f023e33ca8d7e2bbcc600326154009f22e2b8143cc5ffa121e8e12e19e",
+    "indexeddb": 2,
+    "formato_backup": 1,
+    "firebase_ativo": false,
+    "testes": {
+      "testes/ebd.cjs": "b46e641c923f5f3d5ab2e04d17c4eed979726093f334ec20128dcf2df11e3d4b",
+      "testes/pwa.cjs": "2ca2c1c3bc291cb896e7241e363095128bc2b0bc918107d6bb6503c0333724f7",
+      "testes/sw.cjs": "a90527dff4a1e76419a589739887aaa7eecd8822bfd8fa133033549d18ed170a",
+      "testes/aluno-modelo.cjs": "317e7aca5d418ab5e64f9a2c381a63dab991ca7e9673e87e0a93f2cd338e676e",
+      "testes/aluno-navegador.cjs": "6854e2fd285c7bc041e0e8ea3340ab97214b70c288573784d99a3ba50c1ee789",
+      "testes/turma-navegador.cjs": "9f838df3767b3a7260b7967c8541118280aab7ff60b0ac0172ffbe0f1d74a8f0"
+    },
+    "configuracao": {
+      "firebase.json": "e87125f3ec6439a59ba44d80a6dcc46378a27a0644b0cda30abeafd2efb67e20",
+      "firestore.rules": "ec4bfbc08b98f18755fc6a5e3b93af33b331925b73df4efa4c0c708d3ebe73ff",
+      "CONFIGURACAO-FIREBASE-0210.txt": "3f53bd0eac0ea4030ec542d6ca58acb915d2cc1b738965255af928363efd51a5"
+    }
+  }
 }
