@@ -510,7 +510,7 @@
           result.modo, chapter, bucket.n, bucket.a, bucket.p, 'Não verificado']);
       }
     }
-    parent.append(el('p', rows.length + ' missões recebidas · Resultados não verificados'));
+    parent.append(el('p', rows.length + (rows.length === 1 ? ' missão recebida' : ' missões recebidas') + ' · Resultados não verificados'));
     for (const [dimension, group] of groups) {
       const list = el('ul');
       for (const {label, n, a, p} of group.values()) {

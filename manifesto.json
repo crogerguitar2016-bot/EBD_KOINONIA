@@ -7,7 +7,7 @@
     "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24"
   },
   "arquivos": {
-    "index.html": "3fd72c306cb55e8235cb38b889bc92fcabd3b57d69fbea889dff4a14968ec17e",
+    "index.html": "a723489d003cec486fd8bf33baaf30aa8f00363097656f29f621461e4a0ed829",
     "questoes-v03.js": "d1bfd4c7836280250c46751c5fa84438938887b5af869a4016b478dc7e906d24",
     "explorar.css": "c983578e4fdaa9ad34fcda32bd99c3653806ef6d0fc6bc9ba1fbf28204b6272f",
     "explorar.js": "b13fd7999508752ff044adf95252f2fae5321977c34dbbb382cb0e217781f74e",
@@ -20,14 +20,14 @@
     "icons/icon-maskable.png": "990ea6c6c0995c13dad3b2455d396f0075469680e609b7c48ff9b3035eebacbe",
     "manifest.webmanifest": "7b20de871c185ef86e30d221b012f8d18e77f8550c99852e12af7405dee960aa",
     "offline.html": "ca70dcbf67f5120d8d1f5a6004377114ef96aa80f2b30f9f9efa05ef54108042",
-    "sw.js": "9f0c765200ec3e37db1a38c0f4e0e54f3d41e6088f52afcef11cf29a71f65180",
+    "sw.js": "7f161525e858104a8933c10e66125bb8544b1b7c13a128f4c6ef6cc67533277a",
     "pwa.js": "c136657fdd0c082d422b9831b9b5a80bd5fc71a4f44c1e125251bf5f1208de73",
     "testes/pwa.cjs": "2ca2c1c3bc291cb896e7241e363095128bc2b0bc918107d6bb6503c0333724f7",
     "aluno-dados.js": "68319585829b79e936340717924e962479e932bc08a4b28e0ced53b5f600a0cd",
     "aluno.js": "7f949150a1da30c41cdefb7a1f1fe2328138c7da5468ec05da13deafa0246791",
-    "turma-config.json": "043b6fc58cd6816929f3afb8c4e5a200ff3265ddb669fdb022b6aa7f90456fa9",
+    "turma-config.json": "03bfa0ca6074e626ac553d4b3a9af25b195a77ad3ebc642d7ce1d2ab37d2af67",
     "turma-core.js": "b51e1d26f8098d02f2b4452e18481fc528ac7f2afd664f3457ff6d47e730d434",
-    "turma.js": "3ce97759289f6b6051b309a3aeabf01192ab6506eaf07421d5f770f58ac582b7"
+    "turma.js": "f76f376eea3801657523742be853a507e9a37eed297cc8c4a93694cfcbbd6e53"
   },
   "historico_pwa": [
     {
@@ -152,6 +152,24 @@
       "firebase.json": "e87125f3ec6439a59ba44d80a6dcc46378a27a0644b0cda30abeafd2efb67e20",
       "firestore.rules": "ec4bfbc08b98f18755fc6a5e3b93af33b331925b73df4efa4c0c708d3ebe73ff",
       "CONFIGURACAO-FIREBASE-0210.txt": "3f53bd0eac0ea4030ec542d6ca58acb915d2cc1b738965255af928363efd51a5"
+    }
+  },
+  "consolidacao_ma_final": {
+    "base": "c9c173fdaf0b90f0bb65baef8f546b98be464817",
+    "release_cache": "2dc9dbbd977c8ea60b83b59d3fb13c4fae753c5356e008fde18f136c13073629",
+    "firebase_ativo": true,
+    "testes": {
+      "testes/ebd.cjs": "b46e641c923f5f3d5ab2e04d17c4eed979726093f334ec20128dcf2df11e3d4b",
+      "testes/aluno-modelo.cjs": "317e7aca5d418ab5e64f9a2c381a63dab991ca7e9673e87e0a93f2cd338e676e",
+      "testes/pwa.cjs": "2ca2c1c3bc291cb896e7241e363095128bc2b0bc918107d6bb6503c0333724f7",
+      "testes/sw.cjs": "a90527dff4a1e76419a589739887aaa7eecd8822bfd8fa133033549d18ed170a",
+      "testes/aluno-navegador.cjs": "c3bffb637e6af07a1c3538e10afe25f5d06d821658282c31f03cfc3f853c45ce",
+      "testes/turma-navegador.cjs": "afeef1e0ecf0b6ebc2147408e6af0c0de83d351dc8450577a2cd93ccd71783af",
+      "testes/firestore-regras-ma-02-49.cjs": "6d66b435969c4d002945a7e76d73d40c1c2dedaff4e8150f6c682691bd13100e"
+    },
+    "configuracao": {
+      "firebase.json": "e87125f3ec6439a59ba44d80a6dcc46378a27a0644b0cda30abeafd2efb67e20",
+      "firestore.rules": "ec4bfbc08b98f18755fc6a5e3b93af33b331925b73df4efa4c0c708d3ebe73ff"
     }
   }
 }

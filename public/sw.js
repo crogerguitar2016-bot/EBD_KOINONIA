@@ -1,6 +1,6 @@
 'use strict';
 
-const RELEASE = '7b5c51f023e33ca8d7e2bbcc600326154009f22e2b8143cc5ffa121e8e12e19e';
+const RELEASE = '2dc9dbbd977c8ea60b83b59d3fb13c4fae753c5356e008fde18f136c13073629';
 const FILES = {
   "aluno-dados.js": {
     "mime": "text/javascript; charset=utf-8",
@@ -40,7 +40,7 @@ const FILES = {
   },
   "index.html": {
     "mime": "text/html; charset=utf-8",
-    "sha256": "3fd72c306cb55e8235cb38b889bc92fcabd3b57d69fbea889dff4a14968ec17e"
+    "sha256": "a723489d003cec486fd8bf33baaf30aa8f00363097656f29f621461e4a0ed829"
   },
   "manifest.webmanifest": {
     "mime": "application/manifest+json",
@@ -64,7 +64,7 @@ const FILES = {
   },
   "turma-config.json": {
     "mime": "application/json; charset=utf-8",
-    "sha256": "043b6fc58cd6816929f3afb8c4e5a200ff3265ddb669fdb022b6aa7f90456fa9"
+    "sha256": "03bfa0ca6074e626ac553d4b3a9af25b195a77ad3ebc642d7ce1d2ab37d2af67"
   },
   "turma-core.js": {
     "mime": "text/javascript; charset=utf-8",
@@ -72,7 +72,7 @@ const FILES = {
   },
   "turma.js": {
     "mime": "text/javascript; charset=utf-8",
-    "sha256": "3ce97759289f6b6051b309a3aeabf01192ab6506eaf07421d5f770f58ac582b7"
+    "sha256": "f76f376eea3801657523742be853a507e9a37eed297cc8c4a93694cfcbbd6e53"
   }
 };
 const PAGES = new Set(["estudo-biblico.html", "index.html", "principais-textos.html"]);
