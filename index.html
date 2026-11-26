@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'"><meta name="referrer" content="no-referrer"><link rel="stylesheet" href="explorar.css"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><script src="pwa.js" defer></script><title>EBD KOINONIA — Atos do Espírito Santo através dos Apóstolos</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f0e8;color:#243b35;font:17px system-ui}main{max-width:720px;margin:auto;padding:24px}header{background:#193b34;color:#f4dfae;padding:30px;border-radius:18px}h1{margin:0;font-size:34px}small{color:inherit}button,select,input{font:inherit;padding:14px;border-radius:10px;border:1px solid #b9c6bd}button{cursor:pointer;background:white;color:#193b34;text-align:left;width:100%;margin:5px 0}button.primary{background:#193b34;color:white;text-align:center}section{background:white;border-radius:16px;padding:20px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap}nav button{width:auto}progress{width:100%;accent-color:#39765b}.muted{color:#62736c}.correct{background:#d7efdc}.wrong{background:#f8d9d5}dialog{max-width:650px;width:94%;border:0;border-radius:16px;padding:24px}dialog::backdrop{background:#0008}label{display:block;margin:10px 0}h2{font-size:23px}
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://apis.google.com https://*.firebaseapp.com; frame-src https://*.firebaseapp.com https://accounts.google.com; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'; worker-src 'self'"><meta name="referrer" content="no-referrer"><link rel="stylesheet" href="explorar.css"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><script src="pwa.js" defer></script><title>EBD KOINONIA — Atos do Espírito Santo através dos Apóstolos</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f0e8;color:#243b35;font:17px system-ui}main{max-width:720px;margin:auto;padding:24px}header{background:#193b34;color:#f4dfae;padding:30px;border-radius:18px}h1{margin:0;font-size:34px}small{color:inherit}button,select,input{font:inherit;padding:14px;border-radius:10px;border:1px solid #b9c6bd}button{cursor:pointer;background:white;color:#193b34;text-align:left;width:100%;margin:5px 0}button.primary{background:#193b34;color:white;text-align:center}section{background:white;border-radius:16px;padding:20px;margin:18px 0}nav{display:flex;gap:8px;flex-wrap:wrap}nav button{width:auto}progress{width:100%;accent-color:#39765b}.muted{color:#62736c}.correct{background:#d7efdc}.wrong{background:#f8d9d5}dialog{max-width:650px;width:94%;border:0;border-radius:16px;padding:24px}dialog::backdrop{background:#0008}label{display:block;margin:10px 0}h2{font-size:23px}
 main{width:min(100%,58rem);padding:clamp(12px,3vw,32px)}
 header,section{padding:clamp(16px,3vw,30px)}
 h1{font-size:clamp(1.7rem,5vw,2.6rem)}
@@ -30,7 +30,43 @@ dialog{max-height:90vh;overflow:auto;color:#243b35}
   button,select{min-height:56px}
   dialog{max-width:58rem}
 }
-</style><main><header><small>ESCOLA BÍBLICA • ATOS 8–12</small><h1>EBD KOINONIA</h1><h2>Atos do Espírito Santo através dos Apóstolos</h2><p>Cinco capítulos. Uma jornada de descobertas.</p><p>Professor: Pastor Carlos Rogério</p></header><nav><button onclick="home()">Início</button><button id="nav-bible" onclick="bible()">Bíblia</button><button onclick="stats()">Resultados</button><button onclick="location.href='estudo-biblico.html'">Estudo Bíblico</button><button type="button" onclick="location.href='principais-textos.html'">Principais Textos Bíblicos</button></nav><div id="view"></div></main><dialog id="reader"><h2>Consulta bíblica</h2><label>Capítulo <select id="chapter" onchange="read()"></select></label><div id="passage"></div><button onclick="document.querySelector('#reader').close()">Voltar</button></dialog><script src="questoes-v03.js"></script><script>
+</style>
+<style>
+#aluno-mode,.aluno-panel,#aluno-confirm,.aluno-results{line-height:1.5;overflow-wrap:anywhere}
+#aluno-mode{margin:1rem 0 .25rem;font-weight:650}
+.aluno-panel,.aluno-results{padding:clamp(.85rem,4vw,1.5rem);min-inline-size:0}
+.aluno-panel h2,.aluno-results h2,#aluno-confirm h2{margin-block:0 .65rem;font-size:1.45rem}
+.aluno-panel h3,.aluno-results h3{margin-block:.8rem .35rem;font-size:1.15rem}
+.aluno-panel p,.aluno-results p{margin-block:.55rem .85rem}
+.aluno-panel button,#aluno-confirm button,.aluno-panel input:not([type=checkbox]),
+.aluno-file-label{min-inline-size:0;max-inline-size:100%;min-block-size:44px;white-space:normal;overflow-wrap:anywhere}
+.aluno-panel input[type=text]{display:block;inline-size:100%;margin-block:.25rem .55rem}
+.aluno-panel details,.aluno-results details{border:1px solid #b9c6bd;border-radius:.65rem;margin-block:.65rem;padding:.2rem .65rem;min-inline-size:0}
+.aluno-panel summary,.aluno-results summary{cursor:pointer;padding-block:.65rem;min-block-size:44px}
+.aluno-panel .aluno-check{display:flex;align-items:center;gap:.55rem;min-block-size:44px;cursor:pointer}
+.aluno-check input{flex:none;inline-size:1.15rem;block-size:1.15rem;accent-color:#193b34}
+.aluno-panel input.aluno-file{position:absolute;inline-size:1px;block-size:1px;min-block-size:0;padding:0;clip-path:inset(50%)}
+.aluno-file-label{display:flex;align-items:center;border:1px solid #b9c6bd;border-radius:.65rem;padding:.55rem .7rem;cursor:pointer}
+.aluno-file:focus-visible + label,.aluno-panel :focus-visible,#aluno-confirm :focus-visible{outline:3px solid #39765b;outline-offset:2px}
+button.aluno-danger{border:1px solid #932b30;color:#81252b;background:#fff2f1}
+#aluno-confirm{max-block-size:calc(100% - 1rem);overflow:auto;color:#243b35}
+#aluno-confirm p{white-space:pre-line}
+#aluno-recovery{overflow-wrap:anywhere}
+.aluno-results .breakdown{grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))}
+.aluno-results progress{display:block;max-inline-size:100%;margin-block:.2rem .55rem}
+</style>
+<main><header><small>ESCOLA BÍBLICA • ATOS 8–12</small><h1>EBD KOINONIA</h1><h2>Atos do Espírito Santo através dos Apóstolos</h2><p>Cinco capítulos. Uma jornada de descobertas.</p><p>Professor: Pastor Carlos Rogério</p></header><nav><button onclick="home()">Início</button><button id="nav-bible" onclick="bible()">Bíblia</button><button onclick="stats()">Resultados</button><button onclick="location.href='estudo-biblico.html'">Estudo Bíblico</button><button type="button" onclick="location.href='principais-textos.html'">Principais Textos Bíblicos</button></nav><p id="aluno-mode">Modo livre</p><button type="button" id="aluno-open">Modo acompanhado</button><button type="button" id="turma-open">Modo turma</button><div id="view"></div></main><div id="aluno-recovery" hidden style="max-width:58rem;margin:auto;padding:0 1rem"><p id="aluno-status" role="status"></p><button type="button" id="aluno-retry" hidden>Tentar gravar novamente</button><button type="button" id="aluno-reopen" hidden>Reabrir a página</button></div>
+<dialog id="aluno-confirm" aria-labelledby="aluno-confirm-title" aria-describedby="aluno-confirm-copy">
+  <h2 id="aluno-confirm-title"></h2><p id="aluno-confirm-copy"></p>
+  <button type="button" value="cancelar" autofocus>Cancelar</button>
+  <button type="button" value="sim">Confirmar</button>
+</dialog>
+<dialog id="turma-dialog" aria-labelledby="turma-title" class="aluno-panel">
+  <h2 id="turma-title">Modo turma</h2><div id="turma-content"></div>
+  <p id="turma-status" role="status"></p>
+  <button type="button" data-close autofocus>Fechar modo turma</button>
+</dialog>
+<dialog id="reader"><h2>Consulta bíblica</h2><label>Capítulo <select id="chapter" onchange="read()"></select></label><div id="passage"></div><button onclick="document.querySelector('#reader').close()">Voltar</button></dialog><script src="questoes-v03.js"></script><script>
 const summaries={8:'A perseguição dispersa os discípulos. Filipe anuncia Cristo em Samaria e explica Isaías ao oficial etíope. Pedro e João visitam Samaria.',9:'Saulo encontra Jesus no caminho de Damasco. Ananias o visita. Pedro cura Eneias em Lida e Tabita volta à vida em Jope.',10:'Cornélio recebe uma visão em Cesareia. Pedro recebe uma visão em Jope e anuncia Jesus na casa de Cornélio.',11:'Pedro explica a recepção dos gentios. Barnabé e Saulo ensinam em Antioquia. Ágabo anuncia uma fome.',12:'Herodes mata Tiago e prende Pedro. A igreja ora. Pedro é libertado por um anjo e vai à casa de Maria, onde Rode reconhece sua voz.'};
 
 const bank = window.EBD_QUESTOES_V03;
@@ -134,7 +170,7 @@ function home() {
   if (active) document.querySelector('#mode').value = active.mode;
 }
 
-function start(total, selectedChapter) {
+function start(total, selectedChapter, replacementApproved = false, requestedMode) {
   if (inActivity || ![5, 10, 16, 20, 40, 80].includes(total)) return;
   const pool = byId.size !== 80 ? [] :
     selectedChapter === undefined ? bank : bank.filter(q => q.capitulo === selectedChapter);
@@ -144,9 +180,9 @@ function start(total, selectedChapter) {
     bankStatus.hidden = false;
     return;
   }
-  if (active && !confirm('Substituir a atividade em andamento?')) return;
+  if (active && !replacementApproved && !confirm('Substituir a atividade em andamento?')) return;
   active = {
-    mode: document.querySelector('#mode').value, elapsed: 0, index: 0,
+    mode: requestedMode || document.querySelector('#mode').value, elapsed: 0, index: 0,
     items: shuffled(pool).slice(0, total).map(q => ({
       id: q.id, order: shuffled(q.alternativas.map((_, index) => index)),
       choice: null, hint: false, consults: 0, assistedConsults: 0
@@ -162,18 +198,22 @@ function resume() {
   question(true);
 }
 
-function resultOf(item) {
-  const q = byId.get(item.id);
+function activityQuestion(activity, item) {
+  return activity?.questions?.find(q => q.id === item.id) ?? byId.get(item.id);
+}
+
+function resultOf(item, activity = active) {
+  const q = activityQuestion(activity, item);
   const correct = item.choice !== null && item.order[item.choice] === q.indiceRespostaCorreta;
-  const multiplier = active.mode === 'desafio' ? 2 :
+  const multiplier = activity.mode === 'desafio' ? 2 :
     item.hint && item.assistedConsults ? 0.5 : item.hint || item.assistedConsults ? 0.75 : 1;
   return {correct, points: correct ? Math.round(weights[q.dificuldade] * multiplier) : 0};
 }
 
-function totals() {
-  return active.items.reduce((sum, item) => {
+function totals(activity = active) {
+  return activity.items.reduce((sum, item) => {
     if (item.choice === null) return sum;
-    const result = resultOf(item);
+    const result = resultOf(item, activity);
     sum.answered++;
     sum.score += Number(result.correct);
     sum.points += result.points;
@@ -183,7 +223,7 @@ function totals() {
 
 function question(focus = false) {
   const item = currentItem();
-  const q = byId.get(item.id);
+  const q = activityQuestion(active, item);
   const done = item.choice !== null;
   const correctIndex = item.order.indexOf(q.indiceRespostaCorreta);
   const sum = totals();
@@ -242,21 +282,26 @@ function next() {
     return;
   }
   pauseClock();
-  const result = {
-    mode: active.mode, date: new Date().toISOString(),
-    total: active.items.length, score: totals().score, points: totals().points,
-    elapsed: active.elapsed, consults: active.items.reduce((n, row) => n + row.consults, 0),
-    answers: active.items.map(row => {
-      const q = byId.get(row.id);
-      return {id: q.id, chapter: q.capitulo, category: q.categoria,
-        difficulty: q.dificuldade, hint: row.hint, consults: row.consults, ...resultOf(row)};
-    })
-  };
+  const result = makeResult(active, new Date().toISOString());
   completed = result;
   records.push(result);
   active = null;
   inActivity = false;
   showResult();
+}
+
+function makeResult(activity, date) {
+  const sum = totals(activity);
+  return {
+    mode: activity.mode, date,
+    total: activity.items.length, score: sum.score, points: sum.points,
+    elapsed: activity.elapsed, consults: activity.items.reduce((n, row) => n + row.consults, 0),
+    answers: activity.items.map(row => {
+      const q = activityQuestion(activity, row);
+      return {id: q.id, chapter: q.capitulo, category: q.categoria,
+        difficulty: q.dificuldade, hint: row.hint, consults: row.consults, ...resultOf(row, activity)};
+    })
+  };
 }
 
 function showResult() {
@@ -267,8 +312,8 @@ function showResult() {
     <details><summary>Cartão de desempenho</summary>
       <p>${completed.mode === 'desafio' ? 'Desafio' : 'Estudo'} • ${completed.consults} consultas</p>
       ${breakdown(completed.answers)}</details>
-    <p><a href="https://wa.me/?text=${encodeURIComponent(shareText())}" target="_blank" rel="noopener">Compartilhar pelo WhatsApp</a></p>
-    <button onclick="share()">Compartilhar resultado</button>
+    ${window.EBDAluno?.selected ? '' : `<p><a href="https://wa.me/?text=${encodeURIComponent(shareText())}" target="_blank" rel="noopener">Compartilhar pelo WhatsApp</a></p>
+    <button onclick="share()">Compartilhar resultado</button>`}
     <button onclick="certificate()">Certificado</button>
     <button onclick="home()">Nova missão</button></section>`;
 }
@@ -294,7 +339,7 @@ function shareText() {
 }
 
 function share() {
-  if (!completed) return;
+  if (!completed || window.EBDAluno?.selected) return;
   const text = shareText();
   if (navigator.share) navigator.share({text}).catch(() => {});
   else if (navigator.clipboard) navigator.clipboard.writeText(text)
@@ -323,11 +368,15 @@ function read() {
     <a href="https://www.biblegateway.com/passage/?search=Acts%20${c}&amp;version=ARC" target="_blank" rel="noopener">Abrir capítulo em uma Bíblia online</a>`;
 }
 
-function breakdown(answers) {
-  if (!answers.length) return '';
+function breakdown(answers, detailed = false) {
+  if (!answers.length && !detailed) return '';
   const dimensions = [['chapter', 'Capítulo'], ['category', 'Categoria'], ['difficulty', 'Dificuldade']];
   return `<div class="breakdown">${dimensions.map(([key, title]) => {
     const groups = new Map();
+    if (detailed && key === 'chapter') {
+      for (const c of chapters) groups.set('Atos ' + c, {correct: 0, count: 0, points: 0});
+    }
+    if (detailed && key !== 'chapter' && !answers.length) return '';
     for (const row of answers) {
       const label = key === 'chapter' ? `Atos ${row.chapter}` : row[key];
       const sum = groups.get(label) || {correct: 0, count: 0, points: 0};
@@ -339,7 +388,10 @@ function breakdown(answers) {
     const labels = [...groups.keys()].sort((a,b) => a.localeCompare(b, 'pt-BR', {numeric:true}));
     return `<div><h3>${title}</h3><ul>${labels.map(label => {
       const {correct, count, points} = groups.get(label);
-      return `<li>${escapeHtml(label)} — ${correct}/${count} acertos (${Math.round(100 * correct / count)}%) • ${points} pts</li>`;
+      if (!count) return `<li>${escapeHtml(label)} — capítulo não estudado</li>`;
+      const percentage = Math.round(100 * correct / count);
+      return `<li>${escapeHtml(label)} — ${correct}/${count} acertos (${percentage}%) • ${points} pts
+        ${detailed ? `<progress aria-label="Aproveitamento em ${escapeHtml(label)}" max="100" value="${percentage}"></progress>` : ''}</li>`;
     }).join('')}</ul></div>`;
   }).join('')}</div>`;
 }
@@ -348,14 +400,40 @@ function stats() {
   stopViewing();
   const sum = key => records.reduce((n, r) => n + r[key], 0);
   const mostRecent = [...records].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
-  view.innerHTML = `<section><h2>Resultados desta página</h2>
+  if (window.EBDAluno?.selected) {
+    const answered = sum('total');
+    const correct = sum('score');
+    const rows = records.flatMap(record => record.answers);
+    const covered = new Set(rows.filter(row => byId.has(row.id)).map(row => row.id)).size;
+    const percentage = answered ? Math.round(100 * correct / answered) : null;
+    const missions = records.length === 1 ? '1 missão concluída' : records.length + ' missões concluídas';
+    view.innerHTML = `<section class="aluno-results"><h2>Painel individual de desempenho</h2>
+      ${active ? `<p>${escapeHtml(window.EBDAluno.summary(active))}</p>
+        <button class="primary" onclick="resume()">Retomar atividade</button>` : ''}
+      <h3>Missões concluídas</h3>
+      <p>${missions} · ${answered} perguntas respondidas · ${correct} acertos · ${answered - correct} erros</p>
+      <p>Aproveitamento ${percentage === null ? 'indisponível' : percentage + '%'}</p>
+      ${percentage === null ? '' : `<progress aria-label="Aproveitamento geral" max="100" value="${percentage}"></progress>`}
+      <p>${sum('points')} pontos · ${sum('consults')} consultas bíblicas · ${duration(sum('elapsed'))} de tempo registrado</p>
+      <p>Cobertura do banco atual nas missões concluídas · ${covered}/${byId.size} perguntas distintas</p>
+      ${byId.size ? `<progress aria-label="Cobertura do banco" max="${byId.size}" value="${covered}"></progress>` : ''}
+      ${breakdown(rows, true)}
+      <h3>Histórico</h3>
+      ${mostRecent.length ? mostRecent.map(record => `<details><summary>${escapeHtml(new Date(record.date).toLocaleString('pt-BR'))}
+        · ${record.mode === 'desafio' ? 'Desafio' : 'Estudo'} · ${record.score}/${record.total} acertos</summary>
+        <p>${record.points} pontos · ${record.consults} consultas bíblicas · ${duration(record.elapsed)}</p>
+        ${breakdown(record.answers)}</details>`).join('') : '<p>Sem missões concluídas.</p>'}
+      <p class="muted">Resultados calculados localmente, sem verificação externa.</p></section>`;
+    return;
+  }
+  view.innerHTML = `<section><h2>${window.EBDAluno?.selected ? 'Painel individual de desempenho' : 'Resultados desta página'}</h2>
     <p>Missões concluídas ${records.length} • Acertos ${sum('score')}/${sum('total')} • Consultas ${sum('consults')}</p>
     ${breakdown(records.flatMap(r => r.answers))}
     ${mostRecent.map(r => `<details><summary>${escapeHtml(new Date(r.date).toLocaleString('pt-BR'))}
       • ${r.mode === 'desafio' ? 'Desafio • ' : r.mode === 'estudo' ? 'Estudo • ' : ''}${r.score}/${r.total} acertos</summary>
       <p>${r.consults} consultas${safeInt(r.points) && safeInt(r.elapsed) ?
         ` • ${r.points} pontos • ${duration(r.elapsed)}` : ''}</p>${breakdown(r.answers)}</details>`).join('')}
-    <p class="muted">Resultados disponíveis enquanto esta página estiver aberta.</p></section>`;
+    <p class="muted">${window.EBDAluno?.selected ? 'Resultados calculados localmente, sem verificação externa.' : 'Resultados disponíveis enquanto esta página estiver aberta.'}</p></section>`;
 }
 
 chapter.innerHTML = chapters.map(c => `<option value="${c}">${c}</option>`).join('');
@@ -371,4 +449,4 @@ setInterval(() => {
   updateClock();
 }, 1000);
 home();
-</script><script src="explorar.js"></script></html>
+</script><script src="aluno-dados.js"></script><script src="aluno.js"></script><script src="explorar.js"></script><script src="turma-core.js"></script><script src="turma.js"></script></html>

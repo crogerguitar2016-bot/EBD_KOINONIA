@@ -66,7 +66,7 @@
         ).join('')}</ol></details>
       ${access}
       <details><summary>Privacidade</summary><p>Respostas e resultados ficam na
-      memória da página e são descartados ao recarregar ou fechar. A hospedagem
+      memória da página no modo livre. No modo acompanhado, o perfil escolhido guarda o progresso neste navegador. A hospedagem
       pode registrar o acesso ao site. Ao escolher compartilhar pelo WhatsApp ou
       abrir a Bíblia online, você acessa um serviço externo. O nome digitado
       para o certificado é usado na página e na impressão solicitada.</p></details>
@@ -188,5 +188,6 @@
     dialog.showModal();
   }
 
-  atlas.addEventListener('click', openAtlas);
+  atlas.addEventListener('click', () => window.EBDAluno?.selected
+    ? window.EBDAluno.atlas(openAtlas) : openAtlas());
 })();

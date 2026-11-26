@@ -63,7 +63,7 @@
       ? 'No Safari, abra Compartilhar e selecione “Adicionar à Tela de Início”.'
       : android
         ? 'No Android, abra o menu do navegador e procure “Instalar aplicativo” ou “Adicionar à tela inicial”.'
-        : 'Se houver suporte à instalação, procure a opção no menu do navegador.';
+        : 'No computador, procure “Instalar aplicativo” no menu ou na barra de endereços. No Safari para Mac, procure “Adicionar ao Dock” no menu Arquivo. Se a opção não aparecer, use a EBD pela aba do navegador.';
   }
 
   window.addEventListener('beforeinstallprompt', event => {
