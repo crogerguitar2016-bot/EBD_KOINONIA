@@ -1,9 +1,9 @@
 {
-  "enabled": false,
+  "enabled": true,
   "firebase": {
-    "apiKey": "",
-    "authDomain": "",
-    "projectId": "",
-    "appId": ""
+    "apiKey": "AIzaSyAOUzCAu3cn_f-WPYOlMDn9cnNlIj3ckhQ",
+    "authDomain": "ebd-koinonia.firebaseapp.com",
+    "projectId": "ebd-koinonia",
+    "appId": "1:191830075391:web:240e5836c0193f556269ca"
   }
 }
