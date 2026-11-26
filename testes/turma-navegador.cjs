@@ -20,7 +20,7 @@ const [url, enabled] = process.argv.slice(2);
     await page.goto(url);
     await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
     await page.reload();
-    await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
+    await esperarCondicao(page, () => navigator.serviceWorker.controller !== null);
     if (enabled !== 'true') {
       await page.getByRole('button', {name: 'Modo turma', exact: true}).click();
       await page.getByRole('button', {name: 'Entrar com Google'}).click();
@@ -82,3 +82,16 @@ const [url, enabled] = process.argv.slice(2);
     assert.deepEqual(remote, []);
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
+
+
+async function esperarCondicao(page, predicate, arg, options = {}) {
+  const timeout = options.timeout ?? 30000;
+  const inicio = Date.now();
+  do {
+    const resultado = await page.evaluate(predicate, arg);
+    if (resultado) return resultado;
+    await new Promise(resolve => setTimeout(resolve, 100));
+  } while (Date.now() - inicio < timeout);
+  throw new Error('Tempo limite aguardando condicao no navegador');
+}
+

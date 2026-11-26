@@ -48,7 +48,7 @@ const url = process.argv[2];
     await page.goto(url);
     await page.evaluate(async () => { await navigator.serviceWorker.ready; });
     await page.reload();
-    await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+    await esperarCondicao(page, () => Boolean(navigator.serviceWorker.controller));
 
     const open = () => page.locator('#aluno-open').click();
     const create = async () => {
@@ -57,7 +57,7 @@ const url = process.argv[2];
       await page.getByRole('button', {name: /Aceito guardar/}).evaluate(el => { el.click(); el.click(); });
     };
     const mission = () => page.getByRole('button', {name: /Desafio rápido/}).click();
-    const idle = () => page.waitForFunction(() => !document.querySelector('main').inert);
+    const idle = () => esperarCondicao(page, () => !document.querySelector('main').inert);
     const ids = () => page.evaluate(() => EBDAlunoDados.keysList());
     const get = id => page.evaluate(id => EBDAlunoDados.get(id), id);
     const queue = id => page.evaluate(id => new Promise((resolve, reject) => {
@@ -145,7 +145,7 @@ const url = process.argv[2];
     await restoredPage.locator('#aluno-open').click();
     await (await profileButton(restoredPage, first)).click();
     await restoredPage.getByRole('button', {name: 'Retomar atividade'}).click();
-    const wait = () => restoredPage.waitForFunction(() => !document.querySelector('main').inert);
+    const wait = () => esperarCondicao(restoredPage, () => !document.querySelector('main').inert);
     await wait();
     assert.equal(await restoredPage.locator('#question-title').textContent(), title);
     assert.deepEqual(
@@ -171,7 +171,7 @@ const url = process.argv[2];
     await other.locator('#aluno-open').click();
     await (await profileButton(other, first)).click();
     await other.getByRole('button', {name: /Desafio rápido/}).click();
-    await other.waitForFunction(() => !document.querySelector('main').inert);
+    await esperarCondicao(other, () => !document.querySelector('main').inert);
     const saved = await other.evaluate(id => EBDAlunoDados.get(id), first);
     const cas = await other.evaluate(async profile => {
       try {
@@ -199,7 +199,7 @@ const url = process.argv[2];
     await openDetails(restoredPage, 'Gerenciar meus dados');
     await restoredPage.getByRole('button', {name: 'Excluir perfil', exact: true}).click();
     await confirmAction(restoredPage, 'Excluir perfil');
-    await restoredPage.waitForFunction(() => document.querySelector('#aluno-status').textContent.includes('mudou'));
+    await esperarCondicao(restoredPage, () => document.querySelector('#aluno-status').textContent.includes('mudou'));
     await restoredPage.reload();
     await manage();
     await (await profileButton(restoredPage, first)).click();
@@ -299,21 +299,21 @@ const url = process.argv[2];
       await versionA.goto(url);
       await versionA.evaluate(() => navigator.serviceWorker.ready.then(() => true));
       await versionA.reload();
-      await versionA.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+      await esperarCondicao(versionA, () => Boolean(navigator.serviceWorker.controller));
       await versionA.locator('#aluno-open').click();
       await openDetails(versionA, 'Criar perfil');
       await versionA.getByRole('button', {name: /Aceito guardar/}).click();
       await versionA.getByRole('button', {name: /Desafio rápido/}).click();
-      await versionA.waitForFunction(() => !document.querySelector('main').inert);
+      await esperarCondicao(versionA, () => !document.querySelector('main').inert);
       await versionA.locator('.option').first().click();
-      await versionA.waitForFunction(() => !document.querySelector('main').inert);
+      await esperarCondicao(versionA, () => !document.querySelector('main').inert);
       const saved = await versionA.evaluate(async () => {
         const [id] = await EBDAlunoDados.keysList();
         return EBDAlunoDados.get(id);
       });
       fs.writeFileSync(process.env.EBD_VARIANTE, 'B');
       await versionA.evaluate(async () => { await (await navigator.serviceWorker.getRegistration()).update(); });
-      await versionA.waitForFunction(async () => Boolean((await navigator.serviceWorker.getRegistration()).waiting));
+      await esperarCondicao(versionA, async () => Boolean((await navigator.serviceWorker.getRegistration()).waiting));
       assert.equal(await versionA.locator('#question-title').count(), 1);
       assert.equal(await versionA.locator('#aluno-confirm').count(), 1);
       assert.equal(await versionA.locator('#aluno-confirm[open]').count(), 0);
@@ -321,7 +321,7 @@ const url = process.argv[2];
       const versionB = await versionContext.newPage();
       await versionB.goto(url);
       await versionB.waitForSelector('#aluno-confirm', {state: 'attached'});
-      await versionB.waitForFunction(async () => {
+      await esperarCondicao(versionB, async () => {
         const registration = await navigator.serviceWorker.getRegistration();
         return registration?.active?.state === 'activated' &&
           !registration.waiting && navigator.serviceWorker.controller === registration.active;
@@ -438,3 +438,16 @@ async function pageContextScenario(browser, url) {
     await page.evaluate(() => globalThis.ensaio0133());
   } finally { await context.close(); }
 }
+
+
+async function esperarCondicao(page, predicate, arg, options = {}) {
+  const timeout = options.timeout ?? 30000;
+  const inicio = Date.now();
+  do {
+    const resultado = await page.evaluate(predicate, arg);
+    if (resultado) return resultado;
+    await new Promise(resolve => setTimeout(resolve, 100));
+  } while (Date.now() - inicio < timeout);
+  throw new Error('Tempo limite aguardando condicao no navegador');
+}
+
