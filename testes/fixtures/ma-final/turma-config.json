@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "firebase": {
+    "apiKey": "",
+    "authDomain": "",
+    "projectId": "",
+    "appId": ""
+  }
+}

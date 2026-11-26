@@ -48,12 +48,14 @@ jobs:
         run: |
           unset EBD_VARIANTE EBD_PLAYWRIGHT EBD_CHROMIUM
           cp public/turma-config.json "$RUNNER_TEMP/turma-config-original.json"
-          node -e 'const fs=require("fs"); const p="public/turma-config.json"; const c=JSON.parse(fs.readFileSync(p)); c.enabled=false; fs.writeFileSync(p,JSON.stringify(c));'
+          cp public/sw.js "$RUNNER_TEMP/sw-original.js"
+          cp testes/fixtures/ma-final/turma-config.json public/turma-config.json
+          cp testes/fixtures/ma-final/sw.js public/sw.js
           url=http://127.0.0.1:8765/
           python3 -m http.server 8765 --bind 127.0.0.1 --directory public \
             > "$RUNNER_TEMP/ebd-http.log" 2>&1 &
           server=$!
-          trap 'kill "$server" 2>/dev/null || true; cp "$RUNNER_TEMP/turma-config-original.json" public/turma-config.json' EXIT
+          trap 'kill "$server" 2>/dev/null || true; cp "$RUNNER_TEMP/turma-config-original.json" public/turma-config.json; cp "$RUNNER_TEMP/sw-original.js" public/sw.js' EXIT
           for attempt in {1..30}; do
             if curl -fsS --max-time 2 "$url" -o /dev/null; then break; fi
             sleep 1
