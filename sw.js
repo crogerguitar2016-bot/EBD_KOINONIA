@@ -1,6 +1,6 @@
 'use strict';
 
-const RELEASE = '2dc9dbbd977c8ea60b83b59d3fb13c4fae753c5356e008fde18f136c13073629';
+const RELEASE = '1695cde03110e51e4c3a5ca5c665de28980134e48e48b60482c4e869a2f7aab6';
 const FILES = {
   "aluno-dados.js": {
     "mime": "text/javascript; charset=utf-8",
@@ -72,7 +72,7 @@ const FILES = {
   },
   "turma.js": {
     "mime": "text/javascript; charset=utf-8",
-    "sha256": "f76f376eea3801657523742be853a507e9a37eed297cc8c4a93694cfcbbd6e53"
+    "sha256": "4383673fe5b15c7b44523617623c74169b35963758ced9e54909ad81d29d6253"
   }
 };
 const PAGES = new Set(["estudo-biblico.html", "index.html", "principais-textos.html"]);
