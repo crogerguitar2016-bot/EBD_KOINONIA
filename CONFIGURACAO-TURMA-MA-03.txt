@@ -1,0 +1,59 @@
+EBD KOINONIA MA 03 — Configuração e homologação
+
+1. Revise o diff e os resultados locais. Execute o workflow Homologação MA 03
+   no GitHub em uma PR destinada à branch homologacao/ma-03 ou
+   release/ma-consolidacao-final, ou por acionamento manual quando o workflow
+   estiver disponível. O ensaio usa Chromium, configuração sem Firebase remoto
+   e um emulador Firestore em loopback com projeto demo.
+
+2. Confira o projeto Firebase da configuração pública, o provedor Google e o
+   domínio autorizado de autenticação. Obtenha no Firebase Authentication o
+   UID real da conta Google verificada do professor responsável. Use somente a
+   data e hora aprovadas para retenção, com o fuso correto.
+
+3. Após homologação e autorização de publicação, revise e publique manualmente
+   firestore.rules no projeto correto, pelo console do Firebase. Depois, pelo
+   console administrativo do Firestore, prepare turmas/koinonia-adultos:
+     titulo (string) = Koinonia Adultos
+     professor (string) = UID real conferido
+     ativa (boolean) = true quando a turma estiver operacional
+     retencaoAte (timestamp) = data e hora aprovadas
+     inscricoesAbertas (boolean) = false
+   Se o documento existir, confira o titular, o prazo e as matrículas antes de
+   ativar o fluxo. Preserve dados preexistentes e mantenha as inscrições fechadas
+   durante a revisão. A publicação do aplicativo segue a rotina autorizada
+   separadamente.
+
+4. Em Modo turma, entre com Google, expanda Koinonia Adultos e abra o painel
+   do professor. Abra ou feche inscrições pelo painel. Valide com contas de
+   teste autorizadas que Matricular-me funciona quando aberto, respeita o
+   fechamento e aparece na lista após Atualizar matrículas. A lista mostra
+   a data das matrículas automáticas e inclui as bloqueadas.
+
+5. A matrícula vincula o UID Google e o apelido informado. Não solicite
+   e-mail, telefone ou nome completo no apelido. O campo técnico
+   autorizacaoRegistrada mantém a compatibilidade do acesso da turma. Na
+   automatrícula ele representa a política de ingresso aplicada pelo servidor.
+   O consentimento pedagógico exige uma ação separada do aluno no perfil
+   acompanhado. Revogar cancela os pendentes no dispositivo e impede novos
+   envios no servidor após confirmação. Os resultados enviados anteriormente
+   seguem a política de retenção. Apenas resumos das novas missões vinculadas
+   após o aceite entram no fluxo de envio do aplicativo. O servidor valida
+   formato, ciclo e consentimento corrente. Resumos enviados pelo cliente
+   continuam classificados como não verificados.
+
+6. Use Bloquear matrícula no painel para invalidar o ciclo e encerrar novos
+   envios. A matrícula inativa permanece como registro de bloqueio até o fim
+   da retenção e impede automatrícula pelo mesmo UID. Reativação é decisão
+   manual do professor e requer novo ciclo e novo consentimento. Não apague
+   registros inativos pelo console durante o período de operação e não reabra
+   um período encerrado após a limpeza. O bloqueio identifica a conta Google
+   utilizada, sem vincular contas distintas de uma mesma pessoa.
+
+7. Ao encerrar o prazo, a leitura de resultados é vedada pelas regras. Faça
+   a limpeza prevista pela política aprovada. Remova resultados e
+   consentimentos antes dos documentos de matrícula. A exclusão de um
+   documento Firestore não elimina automaticamente suas subcoleções.
+   Remova ou minimize cópias e exportações segundo a mesma política.
+   A solução usa Authentication e Firestore sem Functions nem TTL gerenciado.
+   As consultas do painel mantêm paginação, consulta manual e limites da base.

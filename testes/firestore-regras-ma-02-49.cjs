@@ -162,6 +162,85 @@ test('Matriz sintética de acesso, consentimento e retenção', async t => {
       await assertFails(getDocs(query(collection(teacher, oldResults), limit(100))));
       await assertSucceeds(deleteDoc(doc(teacher, retained)));
     });
+    await t.test('Koinonia Adultos: inscrições, bloqueio e consentimento', async () => {
+      const adults = 'turmas/koinonia-adultos';
+      const enrollmentPath = `${adults}/matriculas/aluno`;
+      const consentPath = `${adults}/consentimentos/aluno`;
+      const resultPath = `${enrollmentPath}/resultados/${id(40)}`;
+      const teacherRoom = doc(teacher, adults);
+      const ownMember = doc(student, enrollmentPath);
+      const auto = () => ({...enrollment(), matriculadaEm: serverTimestamp()});
+      await env.withSecurityRulesDisabled(async context => {
+        await setDoc(doc(context.firestore(), adults), {
+          professor: 'professor', ativa: true,
+          retencaoAte: Timestamp.fromMillis(Date.now() + 600000),
+          inscricoesAbertas: false
+        });
+      });
+
+      await assertFails(setDoc(ownMember, auto()));
+      await assertFails(getDoc(doc(student, adults)));
+      await assertFails(updateDoc(doc(student, adults), {inscricoesAbertas: true}));
+      await assertFails(updateDoc(doc(otherTeacher, adults), {inscricoesAbertas: true}));
+      await assertFails(updateDoc(teacherRoom, {inscricoesAbertas: 'true'}));
+      await assertFails(updateDoc(teacherRoom, {inscricoesAbertas: true, professor: 'aluno'}));
+      await assertFails(updateDoc(teacherRoom, {
+        inscricoesAbertas: true, retencaoAte: Timestamp.fromMillis(Date.now() + 900000)
+      }));
+      await assertSucceeds(updateDoc(teacherRoom, {inscricoesAbertas: true}));
+      for (const db of [anonymous, colleague, google('aluno', false),
+        google('aluno', true, 'password')]) {
+        await assertFails(setDoc(doc(db, enrollmentPath), auto()));
+      }
+      await assertFails(setDoc(doc(teacher, `${adults}/matriculas/professor`), auto()));
+      await assertFails(setDoc(doc(student, 'turmas/sintetica/matriculas/aluno2'), auto()));
+      for (const extra of [{admin: true}, {email: 'teste@example.invalid'},
+        {autorizacaoRegistrada: false}, {matriculadaEm: Timestamp.fromMillis(0)}]) {
+        await assertFails(setDoc(ownMember, {...auto(), ...extra}));
+      }
+      await assertSucceeds(setDoc(ownMember, auto()));
+      await assertFails(setDoc(ownMember, auto()));
+      await assertFails(getDoc(doc(colleague, enrollmentPath)));
+      await assertFails(getDocs(query(collection(student, `${adults}/matriculas`), limit(100))));
+      await assertSucceeds(getDocs(query(collection(teacher, `${adults}/matriculas`), limit(100))));
+      await assertFails(updateDoc(doc(colleague, enrollmentPath), {ativa: false}));
+      await assertFails(updateDoc(ownMember, {rotulo: 'Alterado'}));
+      await assertFails(updateDoc(doc(student, adults), {professor: 'aluno'}));
+      await assertFails(setDoc(doc(student, resultPath), result()));
+      await assertSucceeds(updateDoc(teacherRoom, {inscricoesAbertas: false}));
+      await assertFails(setDoc(doc(colleague, `${adults}/matriculas/colega`), auto()));
+      await assertSucceeds(setDoc(doc(student, consentPath), optIn()));
+      await assertSucceeds(setDoc(doc(student, resultPath), result()));
+      await assertFails(getDoc(doc(colleague, resultPath)));
+      await assertFails(getDoc(doc(otherTeacher, resultPath)));
+      await assertSucceeds(updateDoc(doc(student, consentPath), {
+        ativa: false, alteradoEm: serverTimestamp()
+      }));
+      await assertFails(setDoc(doc(student, `${enrollmentPath}/resultados/${id(41)}`), result()));
+      await assertSucceeds(updateDoc(teacherRoom, {inscricoesAbertas: true}));
+      await assertSucceeds(updateDoc(doc(teacher, enrollmentPath), {
+        ativa: false, autorizacaoRegistrada: false, ciclo: nextCycle,
+        alteradaEm: serverTimestamp()
+      }));
+      await assertFails(deleteDoc(doc(teacher, enrollmentPath)));
+      await assertFails(deleteDoc(ownMember));
+      await assertFails(setDoc(ownMember, auto()));
+      await assertFails(getDoc(doc(student, resultPath)));
+      await assertFails(setDoc(doc(student, consentPath), optIn(nextCycle, id(42))));
+      await env.withSecurityRulesDisabled(async context => {
+        await updateDoc(doc(context.firestore(), adults), {
+          retencaoAte: Timestamp.fromMillis(Date.now() - 60000)
+        });
+      });
+      await assertFails(setDoc(doc(colleague, `${adults}/matriculas/colega`), auto()));
+      await assertFails(updateDoc(teacherRoom, {inscricoesAbertas: true}));
+      await assertSucceeds(updateDoc(teacherRoom, {inscricoesAbertas: false}));
+      await assertFails(getDoc(doc(teacher, resultPath)));
+      await assertSucceeds(deleteDoc(doc(teacher, resultPath)));
+      await assertSucceeds(deleteDoc(doc(teacher, consentPath)));
+      await assertSucceeds(deleteDoc(doc(teacher, enrollmentPath)));
+    });
+
   } finally {
     await env.cleanup();
   }

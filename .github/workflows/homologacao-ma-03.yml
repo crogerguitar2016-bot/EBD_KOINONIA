@@ -1,0 +1,77 @@
+name: Homologação MA 03
+on:
+  push:
+    branches:
+      - homologacao/ma-03
+      - release/ma-consolidacao-final
+  pull_request:
+    branches:
+      - homologacao/ma-03
+      - release/ma-consolidacao-final
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: homologacao-ma-03-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  homologar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Preparar dependências e Chromium
+        shell: bash
+        run: |
+          depot="$RUNNER_TEMP/ebd-ma-0249"
+          npm install --prefix "$depot" --no-audit --no-fund \
+            playwright@1.51.1 firebase-tools@14.12.0 \
+            @firebase/rules-unit-testing@3.0.4 firebase@10.14.1
+          "$depot/node_modules/.bin/playwright" install --with-deps chromium
+          printf 'NODE_PATH=%s\n' "$depot/node_modules" >> "$GITHUB_ENV"
+      - name: Verificar motores e cache
+        run: |
+          for file in public/{explorar,pwa,sw,aluno,aluno-dados,turma,turma-core}.js; do
+            node --check "$file"
+          done
+          node testes/ebd.cjs public
+          node testes/aluno-modelo.cjs
+          node --test testes/pwa.cjs testes/sw.cjs
+      - name: Executar suítes no Chromium
+        shell: bash
+        run: |
+          unset EBD_VARIANTE EBD_PLAYWRIGHT EBD_CHROMIUM
+          cp public/turma-config.json "$RUNNER_TEMP/turma-config-original.json"
+          cp public/sw.js "$RUNNER_TEMP/sw-original.js"
+          cp testes/fixtures/ma-final/turma-config.json public/turma-config.json
+          cp testes/fixtures/ma-final/sw.js public/sw.js
+          url=http://127.0.0.1:8765/
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory public \
+            > "$RUNNER_TEMP/ebd-http.log" 2>&1 &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true; cp "$RUNNER_TEMP/turma-config-original.json" public/turma-config.json; cp "$RUNNER_TEMP/sw-original.js" public/sw.js' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS --max-time 2 "$url" -o /dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS --max-time 2 "$url" -o /dev/null
+          timeout 240s node testes/aluno-navegador.cjs "$url"
+          timeout 120s node testes/turma-navegador.cjs "$url" false
+      - name: Verificar regras e matrícula automática no emulador Firestore
+        shell: bash
+        env:
+          CI: 'true'
+          FIREBASE_CLI_DISABLE_UPDATE_CHECK: 'true'
+        run: |
+          "$RUNNER_TEMP/ebd-ma-0249/node_modules/.bin/firebase" \
+            --non-interactive --project demo-ebd-ma-0249 --config firebase.json \
+            emulators:exec --only firestore "node --test testes/firestore-regras-ma-02-49.cjs"

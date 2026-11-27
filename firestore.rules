@@ -36,6 +36,28 @@ service cloud.firestore {
         && (!d.ativa || d.autorizacaoRegistrada)
         && uuid(d.ciclo) && d.alteradaEm == request.time;
     }
+    function adultos(c) { return c == 'koinonia-adultos'; }
+
+    function autoEnrollment(c, uid, d) {
+      return adultos(c) && own(uid) && open(c)
+        && classroom(c).professor != uid
+        && classroom(c).get('inscricoesAbertas', false) == true
+        && exact(d, ['rotulo', 'ativa', 'autorizacaoRegistrada', 'ciclo',
+          'alteradaEm', 'matriculadaEm'])
+        && d.rotulo is string && d.rotulo.size() > 0 && d.rotulo.size() <= 60
+        && d.ativa == true && d.autorizacaoRegistrada == true
+        && uuid(d.ciclo) && d.alteradaEm == request.time
+        && d.matriculadaEm == request.time;
+    }
+
+    function enrollmentWindow(c) {
+      let changes = request.resource.data.diff(resource.data).affectedKeys();
+      return adultos(c) && teacher(c)
+        && changes.hasOnly(['inscricoesAbertas'])
+        && request.resource.data.inscricoesAbertas is bool
+        && (request.resource.data.inscricoesAbertas == false || open(c));
+    }
+
     function optIn(d, c, uid) {
       return exact(d, ['versao', 'escopo', 'ativa', 'chave', 'ciclo', 'alteradoEm'])
         && d.versao == 1 && d.escopo == 'novas-missoes'
@@ -80,15 +102,30 @@ service cloud.firestore {
 
     match /turmas/{c} {
       allow get: if teacher(c) || eligible(c, request.auth.uid);
+      allow update: if enrollmentWindow(c);
 
       match /matriculas/{uid} {
         allow get: if own(uid) || teacher(c);
         allow list: if teacher(c) && request.query.limit <= 100;
-        allow create: if teacher(c) && open(c) && enrollment(request.resource.data);
-        allow update: if teacher(c) && enrollment(request.resource.data)
+        allow create: if (teacher(c) && open(c) && enrollment(request.resource.data))
+          || autoEnrollment(c, uid, request.resource.data);
+        allow update: if teacher(c)
+          && (enrollment(request.resource.data) ||
+            (adultos(c) && resource.data.keys().hasAll(['matriculadaEm'])
+              && request.resource.data.matriculadaEm == resource.data.matriculadaEm
+              && enrollment({
+                  'rotulo': request.resource.data.rotulo,
+                  'ativa': request.resource.data.ativa,
+                  'autorizacaoRegistrada': request.resource.data.autorizacaoRegistrada,
+                  'ciclo': request.resource.data.ciclo,
+                  'alteradaEm': request.resource.data.alteradaEm
+                })
+              && exact(request.resource.data, ['rotulo', 'ativa', 'autorizacaoRegistrada',
+                'ciclo', 'alteradaEm', 'matriculadaEm'])))
           && request.resource.data.ciclo != resource.data.ciclo
           && (open(c) || request.resource.data.ativa == false);
-        allow delete: if teacher(c) && resource.data.ativa == false;
+        allow delete: if teacher(c) && resource.data.ativa == false
+          && (!adultos(c) || request.time >= classroom(c).retencaoAte);
 
         match /resultados/{id} {
           allow get: if eligible(c, uid) ||

@@ -1,6 +1,8 @@
 'use strict';
 (() => {
   const core = globalThis.EBDTurmaCore;
+  const adultClass = 'koinonia-adultos';
+  const adultName = 'Koinonia Adultos';
   const data = globalThis.EBDAlunoDados;
   const configURL = new URL('turma-config.json', document.currentScript.src);
   const base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -101,7 +103,7 @@
 
   function welcome() {
     clear();
-    content.append(el('p', 'Use a conta Google autorizada para acessar a turma. A sessão termina ao fechar ou recarregar a página.'));
+    content.append(el('p', 'Use uma conta Google com e-mail verificado para acessar o modo turma. A sessão termina ao fechar ou recarregar a página.'));
     content.append(button('Entrar com Google', async () => {
       const {authAPI, auth} = await initialize();
       const provider = new authAPI.GoogleAuthProvider();
@@ -144,9 +146,44 @@
     return code;
   }
 
+  async function enrollAdult(current, alias) {
+    ensure(current);
+    if (!alias) stop('Informe um apelido para identificação no painel privado do professor.');
+    const {fs, db} = modules;
+    const ref = refs(adultClass, current.uid).member;
+    const cycle = crypto.randomUUID();
+    const created = await fs.runTransaction(db, async tx => {
+      ensure(current);
+      const saved = (await tx.get(ref)).data();
+      ensure(current);
+      if (saved) {
+        if (!saved.ativa || !saved.autorizacaoRegistrada) {
+          stop('Matrícula bloqueada ou indisponível. Consulte o professor.');
+        }
+        return false;
+      }
+      tx.set(ref, {rotulo: alias, ativa: true, autorizacaoRegistrada: true,
+        ciclo: cycle, alteradaEm: fs.serverTimestamp(), matriculadaEm: fs.serverTimestamp()});
+      return true;
+    }, {maxAttempts: 3});
+    ensure(current);
+    await student(current, adultClass);
+    notice(created
+      ? 'Matrícula confirmada. Você pode escolher se deseja autorizar o envio de novas missões.'
+      : 'Sua matrícula já está registrada.');
+  }
+
   function account() {
     clear();
     const current = session;
+    const adults = el('details');
+    adults.append(el('summary', adultName), el('p',
+      'Com as inscrições abertas, o apelido informado fica visível no painel privado do professor. Você decide separadamente se quer enviar resultados de novas missões.'));
+    const alias = field(adults, 'Apelido para a matrícula');
+    adults.append(button('Matricular-me', () => enrollAdult(current, data.normalizeName(alias.value))),
+      button('Consultar minha matrícula em Koinonia Adultos', () => student(current, adultClass)),
+      button('Painel do professor de Koinonia Adultos', () => teacher(current, adultClass)));
+    content.append(adults);
     const code = field(content, 'Código da turma');
     content.append(button('Consultar matrícula', () => student(current, classCode(code))),
       button('Abrir painel do professor', () => teacher(current, classCode(code))),
@@ -179,7 +216,7 @@
     }) : undefined;
     ensure(current);
     clear();
-    content.append(el('h3', 'Turma ' + c),
+    content.append(el('h3', c === adultClass ? adultName : 'Turma ' + c),
       el('p', 'O professor recebe a modalidade, a atividade e os totais por capítulo. Os resultados são calculados neste dispositivo e marcados como não verificados. Somente missões iniciadas após a adesão podem entrar na fila.'),
       el('p', turma ? 'Prazo de retenção informado pela turma: ' +
         turma.retencaoAte.toDate().toLocaleString('pt-BR') + '. Solicitações sobre dados já recebidos devem ser encaminhadas ao professor.' :
@@ -373,11 +410,42 @@
     ensure(current);
     if (turma?.professor !== current.uid) stop('Painel disponível ao professor autorizado desta turma.');
     clear();
-    content.append(el('h3', 'Painel privado · Turma ' + c),
+    content.append(el('h3', 'Painel privado · ' + (c === adultClass ? adultName : 'Turma ' + c)),
       el('p', 'Resultados não verificados. O período usa a data de recebimento no fuso deste dispositivo.'));
     const roster = fs.collection(db, 'turmas', c, 'matriculas');
     const students = await pages(roster, [fs.orderBy(fs.documentId())], current, epoch, 500);
     const labels = new Map(students.map(doc => [doc.id, doc.data().rotulo]));
+
+    if (c === adultClass) {
+      const admissions = el('section');
+      const opened = turma.inscricoesAbertas === true;
+      admissions.append(el('h4', 'Novas matrículas'),
+        el('p', opened ? 'Inscrições abertas.' : 'Inscrições fechadas.'),
+        button(opened ? 'Fechar inscrições' : 'Abrir inscrições', async () => {
+          ensure(current);
+          if (!opened && !confirm('Abrir matrícula para contas Google verificadas?')) return;
+          await fs.updateDoc(refs(c, current.uid).turma, {inscricoesAbertas: !opened});
+          ensure(current);
+          await teacher(current, c);
+          notice(opened ? 'Inscrições fechadas.' : 'Inscrições abertas.');
+        }));
+      const recent = students.filter(doc => doc.data().matriculadaEm)
+        .sort((a, b) => b.data().matriculadaEm.toMillis() - a.data().matriculadaEm.toMillis());
+      if (recent.length) {
+        const list = el('ul');
+        for (const doc of recent) {
+          const row = doc.data();
+          list.append(el('li', row.rotulo + ' · ' + doc.id.slice(-6) + ' · ' +
+            row.matriculadaEm.toDate().toLocaleString('pt-BR') + ' · ' +
+            (row.ativa ? 'ativa' : 'bloqueada')));
+        }
+        admissions.append(list);
+      } else {
+        admissions.append(el('p', 'Nenhuma matrícula automática registrada.'));
+      }
+      admissions.append(button('Atualizar matrículas', () => teacher(current, c)));
+      content.append(admissions);
+    }
 
     const admin = el('details');
     admin.append(el('summary', 'Administrar matrículas'));
@@ -388,7 +456,8 @@
     picker.setAttribute('aria-label', 'Selecionar matrícula para administração');
     picker.append(new Option('Nova matrícula ou código informado', ''));
     for (const doc of students) picker.append(new Option(
-      doc.data().rotulo + ' · ' + (doc.data().ativa ? 'ativa' : 'revogada'), doc.id));
+      doc.data().rotulo + ' · ' + (doc.data().ativa ? 'ativa' :
+        c === adultClass ? 'bloqueada' : 'revogada'), doc.id));
     picker.onchange = () => {
       uid.value = picker.value;
       label.value = labels.get(picker.value) || '';
@@ -405,17 +474,18 @@
       if (saved?.ativa && !confirm('Renovar a matrícula cancela a autorização de envios ainda pendentes no ciclo anterior. Continuar?')) return;
       ensure(current);
       await fs.setDoc(member, {rotulo: alias, ativa: true, autorizacaoRegistrada: true,
+        ...(c === adultClass && saved?.matriculadaEm ? {matriculadaEm: saved.matriculadaEm} : {}),
         ciclo: crypto.randomUUID(), alteradaEm: fs.serverTimestamp()});
       await teacher(current, c);
       notice('Matrícula autorizada.');
-    }), button('Revogar matrícula', async () => {
+    }), button(c === adultClass ? 'Bloquear matrícula' : 'Revogar matrícula', async () => {
       const studentUID = uid.value.trim();
       if (!core.scope.test(studentUID) || !confirm('Bloquear novos envios deste aluno nesta turma?')) return;
       ensure(current);
       await fs.updateDoc(refs(c, studentUID).member, {ativa: false,
         autorizacaoRegistrada: false, ciclo: crypto.randomUUID(), alteradaEm: fs.serverTimestamp()});
       await teacher(current, c);
-      notice('Matrícula revogada.');
+      notice(c === adultClass ? 'Matrícula bloqueada.' : 'Matrícula revogada.');
     }));
     content.append(admin);
 
